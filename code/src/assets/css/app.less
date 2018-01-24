@@ -1,0 +1,114 @@
+//这里面的样式用来覆盖全局样式
+body{
+  /* min-width: 1024px; */
+  /* overflow-x: hidden; */
+}
+#app {
+  font-family: "宋体";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  background: #fff;
+  .el-table{
+    overflow: hidden;
+  }
+  .el-table__expand-icon{
+  	display: none;
+  }
+  .el-collapse-item__arrow{
+    display: none;
+  }
+  .el-collapse-item__header{
+    cursor: default;
+  }
+  a {
+  	color:#666;
+  }
+
+  .el-radio-button {
+    .el-radio-button--medium {
+      .is-active{
+        background-color: #1c517d;
+      }
+    }
+  }
+  
+  
+  .person{
+    padding: 20px;
+    overflow: hidden;
+    text-align: left;
+  }
+
+  .filter-line{
+    margin-bottom: 20px;
+  }
+
+  .page{
+     float: right;
+  }
+
+  .modal-page{
+    width: 600px;
+    height: 400px;
+    background-color: #eee;
+    margin:0 auto;
+  }
+
+  .loading-content {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      opacity: 0.7;
+      background: white;
+  }
+
+  .context-menu {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 11;
+      box-shadow: 2px 2px 2px #999;
+      width: 100px;
+      height: auto;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+  }
+
+  .context-menu li {
+      padding: 0 10px;
+      font-size: 14px;
+      text-align: left;
+      list-style: none;
+      line-height: 30px;
+      cursor: pointer;
+  }
+
+  .context-menu li:hover {
+      background: #eee
+  }
+
+  .context-menu .menu-disabled:hover {
+      background: #fff;
+  }
+
+  .menu-disabled {
+    color:#aaa;
+  }
+
+
+  ::-webkit-scrollbar{width:1px;height:0}
+  ::-webkit-scrollbar-track{background-color:#ddd;}
+ /* ::-webkit-scrollbar-thumb{background-color:#1c517d;} */
+
+
+}
+
+

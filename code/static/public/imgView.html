@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="../css/imgView.css">
+  <link rel="stylesheet" href="../css/message.css">
+  <script src="../js/vue.js"></script>
+  <script src="../js/ajax.js"></script>
+  <script src="../js/jquery-1.11.0.min.js"></script>
+
+</head>
+<body>
+   <div class="img-view" :style="{height:winHeight +'px',width:winWidth +'px'}" id="imgView"  
+          @DOMMouseScroll="imgScale($event)" 
+          @mousewheel="imgScale($event)"
+          @mousemove.prevent="overmove"
+          @mouseup="endmove"
+          >
+     <!-- <p><img src="../images/选转.png" alt="" @click="imgRotate" ></p> -->
+     <div 
+     class="img-content" 
+     :style="{transform:'rotate('+rotate+'deg) scale('+scale+')',left:left + 'px',top:top+'px',height:winHeight +'px',width:winWidth +'px'}"
+     @mousedown.stop="startmove"
+     >
+        <img :src="imgSrc" alt="" ref="showImg" @dragstart.prevent="">
+     </div>
+
+     <div class="view-relatedexp-list" v-show="objectId">
+       <b>知识标签：</b>
+       <span v-for="(item,index) in relatedExpList" v-show="relatedExpList.length !== 0">{{item.Title}}</span>
+       <span v-show="relatedExpList.length == 0">暂无标签</span>
+<!--        <span>测试标签一</span>
+       <span>测试标签一</span>
+       <span>测试标签一</span>
+       <span>测试标签一</span>
+ -->     </div>
+
+     <div class="message" id="message">
+          <img class="el-message__img" src="" id="messageType">
+          <div class="el-message__group">
+            <p id="messageText"></p>
+          </div>
+      </div>
+  </div>
+  
+  <script src="../js/message.js"></script>
+  <script>
+    var $vm = new Vue({
+      el:'#imgView',
+      data:{
+          winWidth: window.innerWidth,
+          winHeight: window.innerHeight,
+          input:'',
+          textarea:'',
+          rotate:0,
+          scale:0.5,
+          imgSrc:'',
+          left: 0,
+          top: 0,
+          moveFlag:false,
+          prevLeft:0,
+          prevTop: 0,
+          relatedExpList:[],
+          objectId:null,
+          objectType:null,
+          message:null,
+          packageData:null
+      },
+      methods:{
+        setWindow() {
+          this.winWidth = window.innerWidth;
+          this.winHeight = window.innerHeight;
+        },
+        
+        /**
+         * [addRecordReadHistory 添加一条阅读历史]
+         * @Author   罗文
+         * @DateTime 2017-12-06
+         */
+        addRecordReadHistory() {
+          let _this = this;
+          $.ajax({
+             type: "POST",
+             url: baseUrl + "/History/Record",
+             data:Object.assign({},{
+              ids:_this.packageData.PackageId,
+              userId:localStorage.userId,
+              objectType:106,
+              actionType:3   //操作动作，3-阅读（点击阅读按钮），4-分享，5-打印，6-点赞
+            },systemParams),
+             success: function(res){
+               if (res.Success) {
+                  
+                }else{
+                  _this.message.showMessage('error',res.Description);
+                }
+             }
+          });
+        },
+        
+        /**
+         * [getRelatedExpList 获取相关知识标签列表]
+         * @Author   罗文
+         * @DateTime 2017-12-04
+         * @return   {[type]}   [description]
+         */
+        getRelatedExpList() {
+          let _this = this;
+          $.ajax({
+             type: "GET",
+             url: baseUrl + "/ExplicitWordLabel/List",
+             data:Object.assign({},{
+              objectId:_this.objectId,
+              type:111,
+              level:0
+            },systemParams),
+             success: function(res){
+               console.log(res);
+               if (res.Success) {
+                  //根据echats需求，重组数据
+                  _this.relatedExpList = res.Data; 
+                }else{
+                  // this.$message.warning(res.data.Description);
+                }
+             }
+          });
+
+        },
+
+        imgRotate() {
+          this.rotate += 90;
+        },
+
+        imgScale(e,winScaleType) {
+          if(this.moveFlag) return;
+          var type = 1;
+
+          if(!winScaleType) {
+             if(e.wheelDelta < 0 || e.detail > 0){
+                  type = -1 ;
+              }else {
+                  type = 1 ;
+              }
+          }else {
+             type = winScaleType;
+          }
+          
+
+          if(type == 1) {  //放大
+            if(this.scale >= 2) {
+              return 
+            }
+
+            this.scale *= 1.1;
+         
+
+          }else if(type == -1){  //缩小
+            if(this.scale <= 0.5) {
+              return 
+            }//缩小到最小
+
+            this.scale /= 1.1;
+          }
+        },
+        startmove(e) {
+          this.moveFlag = true;
+          this.prevLeft = e.pageX - e.target.parentNode.offsetLeft;
+          this.prevTop = e.pageY - e.target.parentNode.offsetTop;
+        },
+        overmove(e) {
+          if(this.moveFlag) {
+              this.left = e.pageX - this.prevLeft;
+              this.top = e.pageY - this.prevTop;
+          }
+        },
+        endmove(e) {
+          this.moveFlag = false;
+        },
+
+        /**
+         * [collect 收藏]
+         * @Author   罗文
+         * @DateTime 2017-12-05
+         * @return   {[type]}   [description]
+         */
+        collect() {
+           let _this = this;
+            $.ajax({
+               type: "POST",
+               url: baseUrl + "/Favorite/CreateOrUpdate",
+               data: Object.assign({},{
+                      objectId:_this.packageData.PackageId,
+                      objectType:111
+                    },systemParams),
+               success: function(res){
+                  if (res.Success) {
+                    if(res.Description.indexOf('取消') !== -1) {
+                        ChangeFavoriteIcon(false,3);
+                     }else {
+                        ChangeFavoriteIcon(true,3);
+                     }
+                    _this.message.showMessage('success',res.Description);
+                  }else{
+                    _this.message.showMessage('error',res.Description);
+                  }
+               }
+            });
+        },
+
+        //检查是否已经收藏
+        gethasCollect() {
+            let _this = this;
+            $.ajax({
+               type: "GET",
+               url: baseUrl + "/Content/Detail",
+               data: Object.assign({},{
+                      id:_this.packageData.PackageId,
+                    },systemParams),
+               success: function(res){
+                  if (res.Success) {
+                    if(res.Data.ExtendData.IsFavorited) {
+                        ChangeFavoriteIcon(true,3);
+                     }else {
+                        ChangeFavoriteIcon(false,3);
+                     }
+                  }else{
+                    _this.message.showMessage('error',res.Description);
+                  }
+               }
+            });
+        },
+      },
+      created() {
+         if(env == 'dev') {
+  
+            this.imgSrc = location.href.slice(location.href.indexOf('imgSrc')+7,location.href.lastIndexOf('&'));
+            this.imgSrc = this.imgSrc.replace('%2F', '/','g');
+
+            this.imgId = location.href.slice(location.href.indexOf('imgId')+6);
+         }else if( env == 'prod') {
+            setInterval(()=>{
+               //只有改变了src，才会重新渲染
+               let ext = ['.jpg','.png','.jpeg','.gif','.bmp'];
+               if(this.imgSrc == GetArgument().split('&')[0] ) {
+                  return;
+               }else {
+                  //如果不是传入的图片类型，则不渲染，进行拦截
+                  let hasExt = false;   //如果为false，则不是图片
+                  for(let i = 0 ; i < ext.length ; i ++) {
+                     if(GetArgument().indexOf(ext[i]) !== -1) {
+                        hasExt = true;
+                     }
+                  }
+
+                  if(!hasExt) return ;
+               }
+
+
+               this.imgSrc = GetArgument().split('&')[0];
+               this.objectId = GetArgument().split('&')[1] ? GetArgument().split('&')[1] : null;
+               this.objectType = GetArgument().split('&')[2] ? GetArgument().split('&')[2] : null;
+               
+               
+               //添加历史记录
+               if(this.objectId) {
+                 this.packageData = GetPackageData(parseInt(this.objectId));
+                 if(this.packageData) {
+                   this.packageData = JSON.parse(this.packageData);
+                 }
+                 //获取关联知识元
+                 this.getRelatedExpList();
+                 this.addRecordReadHistory();
+                 //获取收藏
+                 this.gethasCollect();
+               }else {
+                 this.objectId = '';
+                 this.objectType = '';
+               }
+            }, 200)
+         }
+      },
+      mounted(){
+        // ShowDevTools();
+        
+
+
+        this.message = new Message();
+        this.setWindow();
+        EnableTabIcon(3); //1-epub 2-pdf 3多媒体
+
+
+        window.onresize = ()=>{
+           this.setWindow();
+        }
+      },
+      update() {
+         
+      },
+      watch:{
+        'imgSrc':function(nv) {
+            //初始化图片位置
+            // setTimeout(()=>{
+            //   this.left = this.winWidth/2 - this.$refs.showImg.offsetWidth / 2;
+            //   this.top = this.winHeight/2 - this.$refs.showImg.offsetHeight / 2;
+            // }, 100)
+         }
+      }
+  })
+  
+</script>
+
+<script>
+
+    document.addEventListener('click', ()=>{
+       CloseMenueStrip();
+       EnableTabIcon(3); //1-epub 2-pdf 3多媒体
+     }, false)
+    //旋转
+    function rotate() {
+      $vm.imgRotate();
+    }
+
+    //放大
+    function scaleLarge() {
+      $vm.imgScale('',1);
+    }
+
+    //缩小
+    function scaleMinus() {
+      $vm.imgScale('',-1);
+    }
+
+    //添加收藏
+    function addCollect() {
+      if($vm.$data.objectId) {
+        $vm.collect();
+      }
+    }
+
+     //失焦后再次聚焦验证收藏按钮
+    function volidCollected() {
+        //检查收藏
+        $vm.gethasCollect();
+        // //检查书签
+        // if($vm.$data.pageNumShow) {
+        //     ChangeFavoriteIcon(true, '图文',3);
+        // }else {
+        //     ChangeFavoriteIcon(false, '图文',3);
+        // }
+    }
+
+
+      /**
+     * [toPdfDetail 查看PDF详情]
+     * @Author   罗文
+     * @DateTime 2017-12-07
+     * @return   {[type]}   [description]
+     */
+     function showDetail() {
+        if($vm.$data.objectId) {
+            let packageData = GetPackageData(parseInt($vm.$data.objectId));
+            console.log(packageData)
+            if(packageData) {
+               packageData = JSON.parse(packageData);
+               SaveArgument('id='+packageData.PackageId);
+               switch (packageData.Type) {
+                  case '电路包':
+                      loadForm('/index.html#/circuitPackage','详情',packageData.PackageTitle,true);
+                      break;     
+                  default:
+                      // statements_def
+                      break;
+              }
+            }
+        }
+     }
+</script>
+</body>
+</html>
+
+
+
+

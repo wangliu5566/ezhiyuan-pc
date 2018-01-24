@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="../css/pdf.css">
+  <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/message.css">
+
+
+  <script src="../js/vue.js"></script>
+  <script src="../js/ajax.js"></script>
+  <script src="../js/jquery-1.11.0.min.js"></script>
+  <script src="../js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+  
+  <div class="pdf-view" :style="{height:winHeight +'px',width:winWidth +'px'}" id="pdfView">
+    <!-- <p class="btns">
+      <button @click="collect">加入收藏</button>
+      <button @click="toggleSiderBar">目录</button>
+      <button @click="prev">上一页</button>
+      <span>{{page_num}} / {{page_count}}</span>
+      <button @click="next">下一页</button>
+      <button @click="rotatePdf">旋转</button>
+      <button @click="addscale">放大</button>
+      <button @click="minus">缩小</button>
+      <button>设备切换</button>
+   </p> -->
+
+
+    <iframe :src="'../plug/generic/web/viewer.html' + '?file=' + pdfUrl" frameborder="0" width="100%" height="100%" ref="pdfEle"></iframe>
+
+    <div class="book-cont-bottom">
+        <span style="font-style: italic;font-family:'微软雅黑'">
+           <b>知识标签：</b>
+           <i v-for="(item,index) in relatedExpList" v-show="relatedExpList.length !== 0">{{item.Title}}</i>
+           <i v-show="relatedExpList.length == 0">暂无标签</i>
+        </span>
+        <span style="font-style: italic;font-family:'微软雅黑'">
+            {{page_num}} / {{page_count}}
+        </span>
+    </div>
+
+
+    <!-- 切换设备 -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="equipement">
+      <div class="modal-dialog" role="document" style="width: 480px;height:400px;margin:0 auto">
+        <div class="modal-content">
+          <div class="modal-header nopadding" id="activeTitle">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="equipement">{{pdfData.Title}}</h4>
+          </div>
+          <div class="modal-body">
+              <ul>
+                <li></li>
+              </ul>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+    <div class="message" id="message">
+        <img class="el-message__img" src="" id="messageType">
+        <div class="el-message__group">
+          <p id="messageText"></p>
+        </div>
+    </div>
+
+
+
+
+  </div>
+  <script src="../js/message.js"></script>
+  <script>
+  var $vm = new Vue({
+    el: '#pdfView',
+    data: {
+      winWidth: window.innerWidth,
+      winHeight: window.innerHeight,
+      objectId:null,
+      pdfEle: null,
+      pdfWindow:null,
+      // pdfViewer: '../plug/generic/web/viewer.html',
+      // pdfUrl:'compressed.tracemonkey-pldi-09.pdf',
+      pdfUrl:'',
+      page_num: 0, //当前页数
+      page_count: 0, //总页数
+      relatedExpList:[],
+      pdfData:{},
+      message:null,
+      objectType:null,
+      packageData:null
+    },
+    methods: {
+       /**
+         * [addRecordReadHistory 添加一条阅读历史]
+         * @Author   罗文
+         * @DateTime 2017-12-06
+         */
+        addRecordReadHistory() {
+
+          let _this = this;
+
+          $.ajax({
+             type: "POST",
+             url: baseUrl + "/History/Record",
+             data:Object.assign({},{
+              ids:_this.packageData ? _this.packageData.PackageId : _this.objectId,
+              userId:localStorage.userId,
+              objectType:_this.packageData ? 106 : 103,
+              actionType:3   //操作动作，3-阅读（点击阅读按钮），4-分享，5-打印，6-点赞
+            },systemParams),
+             success: function(res){
+               if (res.Success) {
+                  
+                }else{
+                   _this.message.showMessage('error',res.Description);
+                }
+             }
+          });
+        },
+      /**
+         * [getRelatedExpList 获取相关知识标签列表]
+         * @Author   罗文
+         * @DateTime 2017-12-04
+         * @return   {[type]}   [description]
+         */
+        getRelatedExpList() {
+          let _this = this;
+          $.ajax({
+             type: "GET",
+             url: baseUrl + "/ExplicitWordLabel/List",
+             data:Object.assign({},{
+              objectId:_this.objectId,
+              type:104,
+              level:0
+            },systemParams),
+             success: function(res){
+               console.log(res);
+               if (res.Success) {
+                  //根据echats需求，重组数据
+                  _this.relatedExpList = res.Data; 
+                }else{
+                   _this.message.showMessage('error',res.Description);
+                  // this.$message.warning(res.data.Description);
+                }
+             }
+          });
+        },
+
+       /**
+       * [getRelatedExpList 获取相关知识标签列表]
+       * @Author   罗文
+       * @DateTime 2017-12-04
+       * @return   {[type]}   [description]
+       */
+      getPdfDetail() {
+        let _this = this;
+        $.ajax({
+           type: "GET",
+           url: baseUrl + "/Content/Detail",
+           data: Object.assign({},{
+                  id:_this.objectId
+                },systemParams),
+           success: function(res){
+             console.log(res)
+             if (res.Success) {
+                //根据echats需求，重组数据
+                _this.pdfData = res.Data; 
+              }else{
+                _this.message.showMessage('error',res.Description);
+              }
+           }
+        });
+
+      },
+      setWindow() {
+        this.winWidth = window.innerWidth;
+        this.winHeight = window.innerHeight;
+      },
+
+      
+      /**
+       * [collect 收藏]
+       * @Author   罗文
+       * @DateTime 2017-12-05
+       * @return   {[type]}   [description]
+       */
+      collect() {
+         let _this = this;
+          $.ajax({
+             type: "POST",
+             url: baseUrl + "/Favorite/CreateOrUpdate",
+             data: Object.assign({},{
+                    objectId:_this.packageData ? _this.packageData.PackageId : _this.objectId,
+                    objectType:_this.packageData ? 106 : _this.objectType
+                  },systemParams),
+             success: function(res){
+                if (res.Success) {
+                  if(res.Description.indexOf('取消') !== -1) {
+                      ChangeFavoriteIcon(false,2);
+                   }else {
+                      ChangeFavoriteIcon(true,2);
+                   }
+                  _this.message.showMessage('success',res.Description);
+                }else{
+                  _this.message.showMessage('error',res.Description);
+                }
+             }
+          });
+      },
+
+      //检查是否已经收藏
+      gethasCollect() {
+          let _this = this;
+          $.ajax({
+             type: "GET",
+             url: baseUrl + "/Content/Detail",
+             data: Object.assign({},{
+                    id:_this.packageData ? _this.packageData.PackageId : _this.objectId,
+                  },systemParams),
+             success: function(res){
+              console.log(res)
+                if (res.Success) {
+                  if(res.Data.ExtendData.IsFavorited) {
+                      ChangeFavoriteIcon(true,2);
+                   }else {
+                      ChangeFavoriteIcon(false,2);
+                   }
+                }else{
+                  _this.message.showMessage('error',res.Description);
+                }
+             }
+          });
+      },
+      
+      /**
+       * [setPage 设置页码]
+       * @Author   罗文
+       * @DateTime 2017-11-21
+       */
+      setPage() {
+        //设置当前页数
+         this.page_num = this.pdfWindow.PDFViewerApplication.page;
+
+         //设置总页数
+         if(!this.pdfWindow.PDFViewerApplication.pagesCount) {
+            //根据pdfjs特性，延时获取
+            setTimeout(()=>{
+               this.page_count = this.pdfWindow.PDFViewerApplication.pagesCount;
+            },300)
+         }
+      },
+
+      toggleSiderBar() {
+        if(this.pdfWindow) {
+          this.pdfWindow.document.querySelector('#sidebarToggle').click();
+        }
+      },
+
+
+      /**
+       * [addscale 放大]
+       * @Author   罗文
+       * @DateTime 2017-11-20
+       * @return   {[type]}   [description]
+       */
+      addscale() { //放大
+        this.pdfWindow.document.querySelector('#zoomIn').click();
+      },
+
+      /**
+       * [minus 缩小]
+       * @Author   罗文
+       * @DateTime 2017-11-20
+       * @return   {[type]}   [description]
+       */
+      minus() { //缩小
+        this.pdfWindow.document.querySelector('#zoomOut').click();
+      },
+      /**
+       * [prev 上一页]
+       * @Author   罗文
+       * @DateTime 2017-11-20
+       * @return   {[type]}   [description]
+       */
+      prev() { //上一页
+        this.pdfWindow.document.querySelector('#previous').click();
+        this.setPage();
+      },
+
+      /**
+       * [next 下一页]
+       * @Author   罗文
+       * @DateTime 2017-11-20
+       * @return   {[type]}   [description]
+       */
+      next() { 
+        this.pdfWindow.document.querySelector('#next').click();
+        this.setPage();
+      },
+
+
+      /**
+       * [rotatePdf 旋转]
+       * @Author   罗文
+       * @DateTime 2017-11-21
+       * @return   {[type]}   [description]
+       */
+      rotatePdf() {
+        this.pdfWindow.PDFViewerApplication.rotatePages(90);
+      },
+   
+
+      closepdf() { //关闭PDF
+
+      },
+
+      /**
+       * [queueRenderPage description]
+       * @Author   罗文
+       * @DateTime 2017-11-20
+       * @param    {[type]}   num [description]
+       * @return   {[type]}       [description]
+       */
+      queueRenderPage(num) {
+        
+      }
+    },
+    created() {
+      // ShowDevTools();
+      this.objectId = GetArgument().split('&')[0];
+      this.objectType = GetArgument().split('&')[1];
+
+      this.packageData = GetPackageData(parseInt(this.objectId));
+
+      if(this.packageData && this.packageData !== 'null') {
+        this.packageData = JSON.parse(this.packageData);
+      }else this.packageData = null;
+
+    },
+    mounted() {
+      
+      this.pdfUrl = ReadFile(this.objectId);
+      this.message = new Message();
+
+      //添加阅读历史
+      this.addRecordReadHistory();
+      //获取详情
+      this.getPdfDetail();
+
+      //获取收藏情况
+      this.gethasCollect()
+
+      this.setWindow();
+      window.onresize = () => {
+        this.setWindow();
+      }
+
+      setInterval(()=>{
+         this.setPage();
+      }, 500)
+    },
+  })
+
+  </script>
+  <script>
+   //--------------------这里是暴露给winform的方法---------------------------------
+  </script>
+
+
+
+  <script>
+      document.addEventListener('click', ()=>{
+         CloseMenueStrip();
+         EnableTabIcon(2); //1-epub 2-pdf 3多媒体
+       }, false)
+
+
+      $vm.$refs.pdfEle.onload = function() {
+         //清空pafjs默认的记录阅读位置的功能
+         localStorage.removeItem('database');
+         //获取iframe的window对象
+         $vm.$data.pdfWindow = $vm.$refs.pdfEle.contentWindow;
+         $vm.setPage();
+
+
+         EnableTabIcon(2); //1-epub 2-pdf 3多媒体
+         $vm.$refs.pdfEle.contentWindow.document.addEventListener('click', ()=>{
+           CloseMenueStrip();
+           EnableTabIcon(2); //1-epub 2-pdf 3多媒体
+         }, false)
+
+
+         $vm.$refs.pdfEle.contentWindow.document.addEventListener('contextmenu', (e)=>{
+           e.preventDefault();
+         }, false)
+
+         
+      }
+      
+      //打开pdf详情弹出窗
+      function pdfDetail() {
+        //先获取到所属电路包的Id
+        // $.ajax({
+        //      type: "POST",
+        //      url: baseUrl + "/Favorite/CreateOrUpdate",
+        //      data: Object.assign({},{
+        //             objectId:_this.objectId,
+        //             objectType:104
+        //           },systemParams),
+        //      success: function(res){
+        //        console.log(res)
+        //         if (res.Success) {
+                   
+        //         }else{
+        //           this.message.showMessage('error',res.Description);
+        //         }
+        //      }
+        //   });
+      }
+
+
+      //打开详情/侧边栏
+      function openSidebar() {
+        $vm.toggleSiderBar();
+      }
+
+
+      /**
+     * [toPdfDetail 查看PDF详情]
+     * @Author   罗文
+     * @DateTime 2017-12-07
+     * @return   {[type]}   [description]
+     */
+     function showDetail() {
+        if($vm.$data.packageData) {
+           //此时，是电路包中的资源
+           SaveArgument('id='+$vm.$data.packageData.PackageId);
+           switch ($vm.$data.packageData.Type) {
+              case '电路包':
+                  loadForm('/index.html#/circuitPackage','详情',$vm.$data.packageData.PackageTitle,true);
+                  break;     
+              case '论文':
+                  loadForm('/index.html#/paperDetail','详情',$vm.$data.packageData.PackageTitle,true);
+                  break;      
+              default:
+                  // statements_def
+                  break;
+          }
+        }else {
+          //这里是论文的资源
+          SaveArgument('id='+$vm.$data.objectId);
+          loadForm('/index.html#/paperDetail','详情',$vm.$data.pdfData.Title,true);
+        }
+     }
+
+      //打开详情/侧边栏
+      function openSidebar() {
+        $vm.toggleSiderBar();
+      }
+
+      
+      //上一页
+      function prevPage() {
+        $vm.prev();
+      }
+
+      //下一页
+      function nextPage() {
+        $vm.next();
+      }
+
+      //旋转
+      function rotate() {
+        $vm.rotatePdf();
+      }
+
+      //放大
+      function scaleLarge() {
+        $vm.addscale()
+      }
+
+      //缩小
+      function scaleMinus() {
+        $vm.minus();
+      }
+     
+      //添加收藏
+      function addCollect() {
+        $vm.collect();
+      }
+
+       //失焦后再次聚焦验证收藏按钮
+      function volidCollected() {
+        //检查收藏
+        $vm.gethasCollect();
+        // //检查书签
+        // if($vm.$data.pageNumShow) {
+        //     ChangeFavoriteIcon(true, '图文',3);
+        // }else {
+        //     ChangeFavoriteIcon(false, '图文',3);
+        // }
+     }
+  </script>
+</body>
+
+</html>

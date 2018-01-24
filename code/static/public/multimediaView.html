@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="../css/multimediaView.css">
+  <link href="../plug/VariantHLSPlayer/Contents/video-js.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/message.css">
+
+
+  <script language="javascript" type="text/javascript" src="../plug/VariantHLSPlayer/Contents/video.js"></script>
+  <script language="javascript" type="text/javascript" src="../plug/VariantHLSPlayer/Contents/videojs-contrib-hls.js"></script>
+  <script language="javascript" type="text/javascript" src="../plug/VariantHLSPlayer/Contents/crypto-js.js"></script>
+  <script language="javascript" type="text/javascript" src="../plug/VariantHLSPlayer/Contents/cipher-core.js"></script>
+  <script language="javascript" type="text/javascript" src="../plug/VariantHLSPlayer/Contents/enc-base64.js"></script>
+  <script language="javascript" type="text/javascript" src="../plug/VariantHLSPlayer/Contents/u8array.js"></script>
+
+
+  <script src="../js/ajax.js"></script>
+  <script src="../js/jquery-1.11.0.min.js"></script>
+  <script src="../js/vue.js"></script>
+</head>
+<body>
+   <div class="img-view" :style="{height:winHeight +'px',width:winWidth +'px'}" id="videoView">
+<!--      <p><img src="" alt="" ></p> -->
+     <div :style="{width:winWidth-100 +'px',height:winHeight-100 + 'px'}">
+
+        <video id="example-video" :width="winWidth-100" :height="winHeight-100" class="video-js vjs-default-skin vjs-big-play-centered" controls="controls" >
+        </video>
+
+     </div>
+
+     <div class="view-relatedexp-list">
+       <b>知识标签：</b> 
+       <span v-for="(item,index) in relatedExpList" v-show="relatedExpList.length !== 0">{{item.Title}}</span>
+       <span v-show="relatedExpList.length == 0">暂无标签</span>
+     </div>
+
+
+     <div class="message" id="message">
+          <img class="el-message__img" src="" id="messageType">
+          <div class="el-message__group">
+            <p id="messageText"></p>
+          </div>
+      </div>
+  </div>
+
+
+  <script language="javascript" type="text/javascript">
+        document.addEventListener('click', ()=>{
+           CloseMenueStrip();
+           EnableTabIcon(3); //1-epub 2-pdf 3多媒体
+         }, false)
+
+        EnableTabIcon(3); //1-epub 2-pdf 3多媒体
+
+
+        var videoData = JSON.parse(GetArgument());
+
+        //下面是针对视频解密部分
+        videojs.Hls.xhr.beforeRequest = function (req) {
+            if(req.uri.indexOf("resource/authorize") != -1)
+                req.uri = 'data:,';
+            return req;
+        };
+
+
+       videojs.hook("afterHlsKeyRequest", function(req, resp)
+        {   
+            var u8arr = CryptoJS.enc.u8array;
+
+            var key =  DecryptKey(videoData.Key);
+
+            var keyHex = u8arr.stringify(CryptoJS.enc.Utf8.parse(key));
+            
+            return keyHex.buffer;
+            
+        });
+    
+        function play()
+        {
+            var url = videoData.Url;
+
+            if(url == "")
+            {
+                alert("URL is empty");
+
+                return;
+            }
+
+            var player = videojs('example-video');
+
+
+            player.src({
+                src: url,
+                type: 'application/x-mpegURL'
+            });
+
+            player.play();
+        }
+  </script>
+
+  <script src="../js/message.js"></script>
+  <script>
+    $vm = new Vue({
+      el:'#videoView',
+      data: {
+          winWidth: window.innerWidth,
+          winHeight: window.innerHeight,
+          videoSrc:'C:/Users/admin/Desktop/wind.mp4',
+          audioSrc:'',
+          isVideo:true,
+          relatedExpList:[],
+          isPlaying:false,
+          message:null,
+          packageData:null
+      },
+      methods:{
+        setWindow() {
+          this.winWidth = window.innerWidth;
+          this.winHeight = window.innerHeight;
+        },
+
+        /**
+         * [addRecordReadHistory 添加一条阅读历史]
+         * @Author   罗文
+         * @DateTime 2017-12-06
+         */
+        addRecordReadHistory() {
+          let _this = this;
+          $.ajax({
+             type: "POST",
+             url: baseUrl + "/History/Record",
+             data:Object.assign({},{
+              ids:_this.packageData.PackageId,
+              userId:localStorage.userId,
+              objectType:106,
+              actionType:3   //操作动作，3-阅读（点击阅读按钮），4-分享，5-打印，6-点赞
+            },systemParams),
+             success: function(res){
+               if (res.Success) {
+                  
+                }else{
+                  _this.message.showMessage('error',res.Description);
+                }
+             }
+          });
+        },
+
+        /**
+         * [getRelatedExpList 获取相关知识标签列表]
+         * @Author   罗文
+         * @DateTime 2017-12-04
+         * @return   {[type]}   [description]
+         */
+        getRelatedExpList() {
+          let _this = this;
+          $.ajax({
+             type: "GET",
+             url: baseUrl + "/ExplicitWordLabel/List",
+             data: {
+              objectId:videoData.objectId,
+              type:videoData.objectType,
+              level:0
+            },
+             success: function(res){
+               if (res.Success) {
+                  //根据echats需求，重组数据
+                  _this.relatedExpList = res.Data; 
+                }else{
+                  // this.$message.warning(res.data.Description);
+                }
+             }
+          });
+
+        },
+
+        /**
+         * [collect 收藏]
+         * @Author   罗文
+         * @DateTime 2017-12-05
+         * @return   {[type]}   [description]
+         */
+        collect() {
+           let _this = this;
+            $.ajax({
+               type: "POST",
+               url: baseUrl + "/Favorite/CreateOrUpdate",
+               data: Object.assign({},{
+                      objectId:_this.packageData.PackageId,
+                      objectType:106
+                    },systemParams),
+               success: function(res){
+                  if (res.Success) {
+
+                     if(res.Description.indexOf('取消') !== -1) {
+                        ChangeFavoriteIcon(false,3);
+                     }else {
+                        ChangeFavoriteIcon(true,3);
+                     }
+                    _this.message.showMessage('success',res.Description);
+                  }else{
+                    _this.message.showMessage('error',res.Description);
+                  }
+               }
+            });
+        },
+
+        //检查是否已经收藏
+        gethasCollect() {
+            let _this = this;
+            $.ajax({
+               type: "GET",
+               url: baseUrl + "/Content/Detail",
+               data: Object.assign({},{
+                      id:_this.packageData.PackageId,
+                    },systemParams),
+               success: function(res){
+                  console.log(res)
+                  if (res.Success) {
+                    if(res.Data.ExtendData.IsFavorited) {
+                        console.log(1111)
+                        ChangeFavoriteIcon(true,3);
+                     }else {
+                        ChangeFavoriteIcon(false,3);
+                     }
+                  }else{
+                    _this.message.showMessage('error',res.Description);
+                  }
+               }
+            });
+        },
+      },
+      created() {
+         // setInterval(()=>{
+         //    var src = GetArgument();
+         //    if(src.indexOf('videoSrc') !== -1) {
+         //       //此时传入的是视频地址
+         //       this.isVideo = true;
+         //       this.videoSrc = src.slice(src.indexOf('videoSrc')+9);
+
+         //    }else if(src.indexOf('audioSrc') !== -1) {
+         //       //此时传入的是视频地址
+         //       this.isVideo = false;
+         //       this.audioSrc = src.slice(src.indexOf('audioSrc')+9);
+         //    }
+            
+         // }, 300)
+      },
+      mounted(){
+        // ShowDevTools();
+        this.packageData = GetPackageData(parseInt(videoData.objectId));
+        if(this.packageData) {
+           this.packageData = JSON.parse(this.packageData);
+        }
+
+
+          
+        this.setWindow();
+        this.message = new Message();
+
+        this.addRecordReadHistory();
+        this.getRelatedExpList();
+        
+        //获取收藏
+        this.gethasCollect();
+
+
+        
+
+        var _this = this;
+        window.onresize = ()=>{
+           this.setWindow();
+        }
+      },
+
+      updated() {
+        if(!this.isPlaying) {
+           play();
+           this.isPlaying = true;
+        }
+
+        var _this = this;
+
+        $('.example-video-dimensions').css({
+           width:_this.winWidth - 100 +'px',
+           height:_this.winHeight - 100 +'px'
+        })
+      }
+    })
+  </script>
+
+
+
+  <script>
+    //添加收藏
+    function addCollect() {
+      $vm.collect();
+    }
+
+     //失焦后再次聚焦验证收藏按钮
+    function volidCollected() {
+        //检查收藏
+        $vm.gethasCollect();
+        // //检查书签
+        // if($vm.$data.pageNumShow) {
+        //     ChangeFavoriteIcon(true, '图文',3);
+        // }else {
+        //     ChangeFavoriteIcon(false, '图文',3);
+        // }
+    }
+
+    /**
+     * [toPdfDetail 查看PDF详情]
+     * @Author   罗文
+     * @DateTime 2017-12-07
+     * @return   {[type]}   [description]
+     */
+     function showDetail() {
+          let packageData = GetPackageData(parseInt(videoData.objectId));
+          console.log(packageData)
+          if(packageData) {
+             packageData = JSON.parse(packageData);
+             SaveArgument('id='+packageData.PackageId);
+             switch (packageData.Type) {
+                case '电路包':
+                    loadForm('/index.html#/circuitPackage','详情',packageData.PackageTitle,true);
+                    break;     
+                default:
+                    // statements_def
+                    break;
+            }
+          }
+     }
+  </script>
+</body>
+</html>
+
+

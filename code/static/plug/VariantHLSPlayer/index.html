@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="./Contents/video-js.css" rel="stylesheet">
+
+    <script language="javascript" type="text/javascript" src="./Contents/video.js"></script>
+    <script language="javascript" type="text/javascript" src="./Contents/videojs-contrib-hls.js"></script>
+
+    <script language="javascript" type="text/javascript" src="./Contents/Ajax.js"></script>
+
+    <script language="javascript" type="text/javascript" src="./Contents/crypto-js.js"></script>
+    <script language="javascript" type="text/javascript" src="./Contents/cipher-core.js"></script>
+    <script language="javascript" type="text/javascript" src="./Contents/enc-base64.js"></script>
+    <script language="javascript" type="text/javascript" src="./Contents/u8array.js"></script>
+    <!-- <script language="javascript" type="text/javascript" src="./Contents/tripledes.js"></script> -->
+
+    <title>VideoJS HLS</title>
+  </head>
+  <body>
+    <center>
+        <br />
+        <video id="example-video" width="960" height="540" class="video-js vjs-default-skin" controls="controls" >
+        </video>
+        <br />
+        <br />
+        <input type="text" id="url" style="width:960px" value="" />
+        <br />
+        <br />
+        <button onclick="play()">PLAY</button>
+    </center>
+    
+    <script language="javascript" type="text/javascript">
+        window.parent.ShowDevTools();
+        
+        var GetArgument = window.GetArgument || window.parent.GetArgument;
+        var videoData = JSON.parse(GetArgument());
+        document.getElementById('url').value = videoData.Url;
+
+
+        videojs.Hls.xhr.beforeRequest = function (req) {
+
+            if(req.uri.indexOf("resource/authorize") != -1)
+                req.uri = 'data:,';
+
+            return req;
+        };
+
+
+		videojs.hook("afterHlsKeyRequest", function(req, resp)
+        {   
+            var u8arr = CryptoJS.enc.u8array;
+
+            var key =  window.parent.DecryptKey(videoData.Key);
+
+            var keyHex = u8arr.stringify(CryptoJS.enc.Utf8.parse(key));
+            
+            return keyHex.buffer;
+            
+        });
+    
+        function play()
+        {
+            var url = document.getElementById("url").value;
+
+            if(url == "")
+            {
+                alert("URL is empty");
+
+                return;
+            }
+
+            var player = videojs('example-video');
+
+
+            player.src({
+                src: url,
+                type: 'application/x-mpegURL'
+            });
+
+            player.play();
+        }
+
+    </script>
+  </body>

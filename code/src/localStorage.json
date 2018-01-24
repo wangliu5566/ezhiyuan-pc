@@ -1,0 +1,43 @@
+{
+  "description": "本文件用于记录本项目中用的所有localStorage的键值对",
+  "localStorageKeys":{
+    "key":"键名",
+    "value":"值",
+    "valueType":"值类型",
+    "model":"这个item使用的模块",
+    "description":"对这个item功能的描述"
+  },
+  "localStorage":[
+    {
+      "key":"historySearchList",
+      "value":"",
+      "valueType":"String",
+      "model":"知识导航与热度排行的知识元搜索",
+      "description":"用于记录历史搜索词，多个历史记录搜索词用半角逗号隔开"
+    },{
+      "key":"deviceToken",
+      "value":"",
+      "valueType":"String",
+      "model":"设备token",
+      "description":"用于设置系统参数"
+    },{
+      "key":"userId",
+      "value":"",
+      "valueType":"Number",
+      "model":"任何模块",
+      "description":"用户ID"
+    },{
+      "key":"userInfo",
+      "value":"",
+      "valueType":"Object",
+      "model":"用户信息",
+      "description":"用户信息"
+    },{
+      "key":"productType",
+      "value":"1|2|3",
+      "valueType":"Number",
+      "model":"产品类型",
+      "description":"1 - E知元  2 - 物联网  3 - 互联网+"
+    }
+  ]
+}

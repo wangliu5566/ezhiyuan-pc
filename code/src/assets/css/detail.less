@@ -1,0 +1,363 @@
+
+.saleBtn(){
+   float: left;
+    height: 32px;
+    line-height: 0;
+    padding: 12px 12px;
+    color: #ff0000;
+    border: 1px solid #ff0000;
+    margin:0px 0 0 10px;
+}
+.priceP(){
+   font-weight: 500;
+  margin-top:4px;
+  font-size: 14px;
+  position: relative;
+  right: 0;
+  top: 0;
+  text-align: right;
+}
+.priceSpan(){
+   text-decoration: line-through;
+    font-size: 14px;
+    margin: 0;
+    color:#2c3e50;
+}
+//章节详情
+.section {
+  .top {
+    /* overflow: hidden; */
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+    .section-title{
+        h3{
+        float: left;
+        span{
+          margin-left: 32px;
+          color: #ff0000;
+          font-size: 22px;
+        }
+        p{
+           .priceP();
+            .price-span{
+              .priceSpan();
+            }
+          }
+       }
+       .el-button{
+         .saleBtn()
+        }
+      }
+    .section-intro{
+      margin: 46px 0 52px 0;
+      font-weight: bold;
+      .section-author{ 
+        font-size: 14px;
+        margin-bottom: 12px;
+        span{
+          font-weight: 500;
+          margin-left: 24px;
+        }
+      }
+    }
+    .section-right{
+      .right-title{
+        text-align: right;
+        font-size: 14px;
+        color:#1c517d;
+      }
+      .right-button{
+        margin-top: 88px;
+        display: flex;
+        justify-content: flex-end;
+        .el-button{
+          text-align: center;
+          width: 90px;
+          height: 38px;
+          padding: 12px 12px;
+        }
+     
+       .el-button:nth-child(2){
+         span{
+          display: inline-block;
+          /* margin-left: -5px; */
+         }
+       }
+      }
+    }
+  }
+  .bottom{
+    font-size: 14px;
+    .bottom-one{
+      margin: 30px 0 24px 0;
+      .bottom-title{
+        font-weight: bold;
+        margin-right: 24px;
+        width: 86px;
+      }
+
+      .bottom-content li {
+        line-height: 30px;
+        cursor: pointer;
+      }
+    }
+  }
+}
+//电子标准详情
+.e-standard {
+  @media screen and (max-width: 1376px) {
+    .standard-right{
+      width: 50%;
+    }
+  }
+  .top {
+    /* overflow: hidden; */
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+    img{
+      float: left;
+      margin-right: 42px;
+    }
+    .standard-img{
+      width: 150px;
+      height: 190px;
+      margin-right: 42px;
+      img{
+        width: 100%;
+      }
+    }
+    
+    .standard-right{
+      min-width: 530px;
+     .standard-right-title{
+        h3{
+        float: left;
+        span{
+          margin-left: 32px;
+          color: #ff0000;
+          font-size: 22px;
+        }
+        p{
+           .priceP();
+            .price-span{
+              .priceSpan();
+            }
+          }
+       }
+       .el-button{
+         .saleBtn()
+        }
+      }
+     
+      .section-intro{
+        margin: 46px 0 52px 0;
+        font-weight: bold;
+        .standard-intro-one{
+          margin-right: 60px;
+        }
+        .section-author{ 
+          font-size: 14px;
+          margin-bottom: 12px;
+          span{
+            font-weight: 500;
+          }
+        }
+      }
+      .standard-intro-three{
+        font-weight: bold;
+        .section-author{ 
+          font-size: 14px;
+          margin-bottom: 12px;
+          span{
+            font-weight: 500;
+          }
+        }
+      }
+    }
+    .section-right{
+      .right-title{
+        text-align: right;
+        font-size: 14px;
+        color:#1c517d;
+      }
+      .right-button{
+        margin-top: 88px;
+         display: flex;
+        justify-content: flex-end;
+        .el-button{
+          width: 90px;
+          height: 38px;
+          padding: 12px 12px;
+        }
+      .el-button:nth-child(2){
+         span{
+          display: inline-block;
+          /* margin-left: -5px; */
+         }
+       }
+      }
+    }
+  }
+
+  .bottom{
+    font-size: 14px;
+    .bottom-one{
+      margin: 30px 0 24px 0;
+      .bottom-title{
+        font-weight: bold;
+        margin-right: 24px;
+        width: 86px;
+      }
+    }
+  }
+}
+
+//OA论文详情
+.paper {
+  .top {
+    /* overflow: hidden; */
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+    .paper-title{
+      h3{
+      float: left;
+      span{
+        margin-left: 32px;
+        color: #ff0000;
+        font-size: 22px;
+      }
+      p{
+         .priceP();
+          .price-span{
+            .priceSpan();
+          }
+        }
+     }
+     .el-button{
+       .saleBtn()
+      }
+    }
+    
+    p{
+    	font-size: 12px;
+    	margin: 14px 0;
+    }
+    .section-intro{
+      margin: 46px 0 52px 0;
+      font-weight: bold;
+      .section-author{ 
+        font-size: 14px;
+        margin-bottom: 12px;
+        span{
+          font-weight: 500;
+          margin-left: 24px;
+        }
+      }
+    }
+    .section-right{
+      .right-title{
+        text-align: right;
+        font-size: 14px;
+        color:#1c517d;
+        p{
+          margin: 0;
+        }
+      }
+      .right-button{
+        display: flex;
+        justify-content: flex-end;
+         margin-top: 88px;
+        .el-button{
+          width: 90px;
+          height: 38px;
+          text-align: center;
+          /*padding: 12px 12px;*/
+        }
+     .el-button:nth-child(2){
+         span{
+          display: inline-block;
+          margin-left: -10px;
+         }
+       }
+      }
+    }
+  }
+  .bottom{
+    font-size: 14px;
+    .bottom-one{
+      margin: 30px 0 24px 0;
+      .bottom-title{
+        font-weight: bold;
+        margin-right: 24px;
+        width: 86px;
+      }
+    }
+  }
+}
+//电子电路包
+.circuit-package{
+  @media screen and (max-width: 890px) {
+    .standard-right{
+      width: 50%;
+    }
+  }
+	.top {
+    padding-bottom: 20px;
+    .standard-img{
+      width: 150px;
+      height: 190px;
+      margin-right: 42px;
+      img{
+        width: 100%;
+      }
+    }
+    .standard-right{
+      margin-bottom: 10px;
+      .circuit-title-left{
+        min-width: 350px;
+        .el-button{
+         .saleBtn()
+        }
+      }
+			.circuit-title-right{
+				text-align: center;
+				 font-size: 14px;
+        color:#1c517d;
+			}
+      h3{
+        float: left;
+      	/* margin: 17px 0 10px 0; */
+        /* min-width: 266px; */
+        span{
+          margin-left: 32px;
+          color: #ff0000;
+          font-size: 22px;
+        }
+        p{
+         .priceP();
+          .price-span{
+            .priceSpan();
+          }
+        }
+      }
+      .section-intro{
+      	height: 60px;
+        margin-top:20px;
+	      font-weight: bold;
+	      .standard-intro-div{
+	      	font-weight: 500;
+	        font-size: 14px;
+	      }
+	    }
+	   .right-button{
+        width: 230px;
+        .el-button{
+          width: 45%;
+          height: 38px;
+          padding: 12px 12px;
+        }
+       
+      }
+    }
+  }
+}

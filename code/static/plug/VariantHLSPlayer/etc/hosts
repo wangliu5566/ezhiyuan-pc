@@ -1,0 +1,40 @@
+# Copyright (c) 1993-2009 Microsoft Corp.
+#
+# This is a sample HOSTS file used by Microsoft TCP/IP for Windows.
+#
+# This file contains the mappings of IP addresses to host names. Each
+# entry should be kept on an individual line. The IP address should
+# be placed in the first column followed by the corresponding host name.
+# The IP address and the host name should be separated by at least one
+# space.
+#
+# Additionally, comments (such as these) may be inserted on individual
+# lines or following the machine name denoted by a '#' symbol.
+#
+# For example:
+#
+#      102.54.94.97     rhino.acme.com          # source server
+#       38.25.63.10     x.acme.com              # x client host
+
+# localhost name resolution is handled within DNS itself.
+#	127.0.0.1       localhost
+#	::1             localhost
+127.0.0.1           api.pas.kingchannels.dev
+127.0.0.1           pas.kingchannels.dev
+127.0.0.1           api.jiangong.kingchannels.dev
+127.0.0.1           jiangong.kingchannels.dev
+127.0.0.1           api.borderland.kingchannels.dev
+127.0.0.1           borderland.kingchannels.dev
+127.0.0.1           test.dev
+127.0.0.1           test1.dev
+127.0.0.1           sample.dev
+127.0.0.1           aqr.mocts.prototype.dev
+127.0.0.1           cms.mocts.prototype.dev
+127.0.0.1           mocts.prototype.dev
+127.0.0.1           prototype.dev
+127.0.0.1           aqr.mocts.kingchannels.dev
+127.0.0.1           aqrnet.mocts.kingchannels.dev
+127.0.0.1           vod.kingchannels.dev
+
+#127.0.0.1           demo.api.borderland.kingchannels.cn
+#127.0.0.1           api.borderland.kingchannels.cn

@@ -1,0 +1,186 @@
+//购物车
+.shopping-car{
+	width: 100%;
+	.el-table {
+    border: 1px solid #e6ebf5;
+    border-bottom: none;
+    margin-bottom: 100px;
+    .title-span-one{
+    	display: block;
+    	width: 52px;
+    	height: 72px;
+    	margin-right: 24px;
+    	.title-span-img{
+    		width: 100%;
+    	}
+    }
+    .title-span-two{
+    	display: block;
+    }
+    .count-btns{
+    	width: 92px;
+    	height: 22px;
+    	line-height: 19px;
+    	border-top:1px solid #ccc;
+	    border-bottom:1px solid #ccc;
+    	 button{
+	    	height: 20px;
+	    	width: 26px;
+	    	margin: 0;
+	    	padding: 0;
+	    }
+	    button:nth-child(1){
+	    	background-color: #5a8eba;
+	    	border: none;
+	    	color: white;
+	    }
+	    button:nth-child(3){
+	    	background-color: #1c517d;
+	    	border: none;
+	    	color: white;
+	    }
+	    .count-span{
+	    	width: 26px;
+	    	height: 20px;
+	    	text-align: center;
+	    	background-color: white;
+	    	border-top:1px solid #ccc;
+	    	border-bottom:1px solid #ccc;
+	    	border: none;
+	    }
+    }
+  }
+	
+	.shop-footer{
+		height: 62px;
+		background-color: #eee;
+		margin-top: 20px;
+		/* position: fixed;
+		left: 0;
+		bottom: 0; */
+		.shop-span-count{
+			font-size: 24px;
+			font-weight: bold;
+			color: #ff0000;
+		}
+		.shop-footer-delete{
+			.el-button{
+				margin:14px 0 0 12px;
+			}
+		}
+		.shop-footer-check{
+			.el-button{
+				height: 62px;
+				line-height: 0;
+				width: 190px;
+				background-color: #1c517d;
+				color: white;
+				border-radius: 0;
+			}
+		}
+	}
+}
+
+//确认订单
+.confirm-order{
+	@media screen and (max-width: 1210px) {
+	.column-one{
+			ul{
+				 span:nth-child(2){
+						width: 20%;
+			  }
+			  span:nth-child(3){
+						width: 26%;
+			  }
+			  span:nth-child(4){
+						width: 16%;
+			  }
+			  span:nth-child(5){
+						width: 10%;
+			  }
+			}
+			 
+		}	
+	}
+	.confirm-footer{
+		height: 50px;
+		background-color: #eee;
+		margin-top: 20px;
+		.confirm-price{
+			height: 50px;
+			line-height:50px;
+			margin-left: 60px;
+			div+div{
+				margin-left: 20px
+			}
+			.confirm-num-span{
+				font-weight: bold;
+				color: #ff0000;
+			}
+		}
+		.confirm-btn{
+			height: 50px;
+			line-height: 0;
+			width: 160px;
+			background-color: #1c517d;
+			color: white;
+		}
+	}
+}
+//全部订单
+.order-wrap{
+ @media screen and (max-width: 1210px) {
+	.order-all{
+		.title-span-one{
+    	display: block;
+    	width: 52px;
+    	height: 72px;
+    	margin-right: 24px;
+    	.title-span-img{
+    		width: 100%;
+    	}
+    }
+		.column-one{
+			ul{
+				 span:nth-child(2){
+						width: 20%;
+			  }
+			  span:nth-child(3){
+						width: 26%;
+			  }
+			  span:nth-child(4){
+						width: 16%;
+			  }
+			  span:nth-child(5){
+						width: 10%;
+			  }
+			}
+			 
+		}	
+	}
+ }
+}
+
+
+.information-detail {
+	width: 476px;
+	height: 367px;
+	/* outline: 1px solid #ccc; */
+	overflow: hidden;
+	p {
+	  width: 80%;
+	  margin: 0 auto;
+	  span {
+	  	 font-size: 20px;
+	  }
+
+	  i {
+	  	font-style: normal;
+	  	font-size: 12px;
+	  }
+	}
+
+	.infor-title {
+		margin: 20px auto;
+	}
+}
