@@ -5,8 +5,7 @@
      v-loading="loading" 
       element-loading-text="数据加载中..."
       :data="tableData" 
-      @selection-change="handleSelectionChange"
-      :default-sort = "{prop: 'CreateTime', order: 'descending'}">
+      @selection-change="handleSelectionChange">
         <el-table-column
         type="selection"
         width="55">
@@ -24,8 +23,7 @@
         </el-table-column>
         <el-table-column 
         prop="CreateTime" 
-        label="时间"
-        sortable>
+        label="时间">
         </el-table-column>
         
         <el-table-column label="操作"  width="120">
@@ -71,11 +69,12 @@ export default {
       totalCount:0,
       multipleSelection:'',
 
-      readType:''
+      readType:2
     }
   },
   mounted() {
     this.getList();
+    this.getNoReadList();
      window.onresize = ()=> {
        this.winWidth = this.setWindow().winWidth;
        this.winHeight = this.setWindow().winHeight;
@@ -142,8 +141,8 @@ export default {
         ]);
     },
     /**
-     * [getList 获取我的收藏列表]
-     * @Author   赵雯欣
+     * [getList 获取所有的消息列表]
+     * @Author   王柳
      * @DateTime 2017-11-20
      * @return   {[type]}   [objectType：全部：0，图书：104，视频：109，图片：111，章节：102，电路包：106，论文：105]
      */
@@ -161,7 +160,7 @@ export default {
           if (res.data.Success) {
             this.loading = false;
             this.tableData = res.data.Data.ItemList;
-            console.log(res.data.Data.ItemList)
+            // console.log(res.data.Data.ItemList)
             this.totalCount = parseInt(res.data.Data.RecordCount);
           }else {
             this.loading = false;
@@ -169,9 +168,32 @@ export default {
           }
         })
     },
+     /**
+     * [getList 获取所有的消息列表]
+     * @Author   王柳
+     * @DateTime 2017-11-20
+     * @return   {[type]}   [objectType：全部：0，图书：104，视频：109，图片：111，章节：102，电路包：106，论文：105]
+     */
+    getNoReadList() {
+      this.$http.get("/Message/List", {
+          params: {
+            ps: this.pageSize,
+            cp: this.page,
+            userId: this.userId,
+            readType:0
+          }
+        })
+        .then((res) => {
+          if (res.data.Success) {
+            if(env == 'prod'){
+              ChangeMessageCount(res.data.Data.RecordCount);
+            }
+          }
+        })
+    },
     /**
      * [handleSizeChange 处理分页每页的条数]
-     * @Author   赵雯欣
+     * @Author   王柳
      * @DateTime 2017-11-20
      * @param    {[type]}   val [description]
      * @return   {[type]}       [description]
@@ -182,7 +204,7 @@ export default {
     },
     /**
      * [handleCurrentChange 处理当前页]
-     * @Author   赵雯欣
+     * @Author   王柳
      * @DateTime 2017-11-20
      * @param    {[type]}   val [description]
      * @return   {[type]}       [description]
@@ -193,7 +215,7 @@ export default {
     },
     /**
      * [handleSelectionChange 确定多选的ids集合]
-     * @Author   赵雯欣
+     * @Author   王柳
      * @DateTime 2017-11-20
      * @param    {[type]}   val [description]
      * @return   {[type]}       [description]
@@ -207,36 +229,26 @@ export default {
     },
     /**
      * [setRead 标为已读]
-     * @Author   赵雯欣
+     * @Author   王柳
      * @DateTime 2017-11-21
      */
-    setRead(){
-      this.$confirm('您确定将该消息标记为已读吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
+    setRead(id){
       this.$http.post("/Message/SetIsRead", {
-          ids:this.multipleSelection,
+          ids:id,
         })
         .then((res) => {
           // console.log(res)
           if (res.data.Success == true) {
-            this.multipleSelection = '';
-            this.$message({
-              message: '标记成功',
-              type: 'success'
-            });
             this.getList();
+            this.getNoReadList();
           }else{
               this.$message.error(res.data.Description);
-           }
+          }
         });
-      }).catch(() => {});
     },
     /**
      * [deleteFn 删除]
-     * @Author   赵雯欣
+     * @Author   王柳
      * @DateTime 2017-11-21
      * @return   {[type]}   [description]
      */
@@ -265,7 +277,7 @@ export default {
     },
     /**
      * [toInformationDetail 跳转到消息详情，数据直接从列表来]
-     * @Author   罗文
+     * @Author   王柳
      * @DateTime 2017-11-30
      * @param    {[type]}   path  [description]
      * @param    {[type]}   query [description]
@@ -273,9 +285,10 @@ export default {
      */
     toInformationDetail(row) {
       if(env == 'dev'){
+        this.setRead(row.Id);
         this.goOtherPage('/InformationDetail',row.Id);
       }else if(env == 'prod') {
-        console.log(row.Id)
+        this.setRead(row.Id);
         SaveArgument( row.Id + '');
         OpenForm(486,436,'/index.html#/InformationDetail','消息详情');
       } 

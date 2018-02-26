@@ -15,7 +15,7 @@
         width="100%"
         >
           <template slot-scope="props">
-            <div style="width:100%;overflow: hidden">
+            <div style="width:100%;height:100%;">
               <ul style="width:60%;float:left" class="order-ul">
                 <!-- <li v-if="props.row.OrderDetails[0].Content.ObjectTypeDescription == '电路包'">
                   <span style="display:inline-block;width:48px;heigth:58px">
@@ -36,13 +36,13 @@
                   {{props.row.OrderDetails[0].Count ? props.row.OrderDetails[0].Count :'0'}}
                   </span>
                 </li> -->
-                <li  v-for="(item,index) in props.row.OrderDetails" style="height:66px;padding:10px 0;border-bottom:1px solid #e6ebf5">
-                  <span style="display:inline-block;width:48px;heigth:58px;margin-left:10px">
+                <li  v-for="(item,index) in props.row.OrderDetails" style="height:66px;line-height:66px;padding:10px 0;border-bottom:1px solid #e6ebf5">
+                  <span style="display:inline-block;width:48px;margin-left:10px">
                     <!-- <img :src="item.Content.CoverUrl" alt="" style="width:100%;vertical-align: middle"> -->
                      <img class="title-span-img" v-if="item.Content.CoverUrl" :src="item.Content.CoverUrl" style="width:100%;vertical-align: middle">
                      <img class="title-span-img" v-else src="../../assets/images/占位符.png" style="width:100%;vertical-align: middle">
                   </span>
-                  <span style="display:inline-block;width:16%;overflow:hidden;text-overflow:hidden;word-wrap:nowrap">
+                  <span style="display:inline-block;width:16%;text-align:left;text-overflow:hidden;word-wrap:nowrap">
                   {{item.Content.Title.length >6 ? item.Content.Title.slice(0,4).concat('...') : item.Content.Title}}
                   </span>
                   <span style="display:inline-block;width:28%;text-align:center">
@@ -56,19 +56,19 @@
                   </span>
                 </li>
               </ul>
-              <div style="width:40%;float:left" class="order-div">
-                <div style="width:25%;float:left;text-align:center;overflow:hidden;border-left:1px solid #e6ebf5">
+              <div style="width:40%;height:100%;float:left;overflow:hidden;" class="order-div">
+                <div style="width:25%;" class="expands-table-cell">
                   <span>
                      ￥{{formatPrice(props.row.TotalMoney,2)}}
                   </span>
                 </div>
-                <div style="width:43%;float:left;text-align:center;overflow:hidden;border-left:1px solid #e6ebf5">
+                <div style="width:43%;" class="expands-table-cell">
                   <span style="text-align:center">
                    {{props.row.IsPaid == true ? '交易成功' : '未支付'}}
                   </span>
                 </div>
                 
-                <ul style="width:31%;float:left;border-left:1px solid #e6ebf5" class="order-div" v-if="props.row.IsPaid">
+                <ul style="width:31%;float:left;border-left:1px solid #e6ebf5;overflow:hidden;" v-if="props.row.IsPaid">
                   <!-- 已购买情况 -->
                    <li  v-for="(item,index) in props.row.OrderDetails" style="height:86px;line-height:86px;text-align:center" >
                        <el-button
@@ -88,16 +88,15 @@
                          :disabled="(item.downLoadPercent == 0 && item.startDownLoad) || (item.downLoadPercent != 0 && item.downLoadPercent != 100)">
 
                             {{ item.hasDown ? '阅读' : (item.downLoadPercent == 0 && !item.startDownLoad? '点击下载' : item.downLoadPercent +'%')}}
-
                         </el-button>
                    </li>
                 </ul>
                 <!-- 未购买情况 -->
-                 <div class="btns order-div" v-else style="border-left:1px solid #e6ebf5">
+                 <div class="expands-table-cell" v-else style="width:31%;">
                   <el-button
                      size="small"
                      type="primary"
-                     style="width:45%;min-width:77px;display:inline" @click="immediatePay(props.row.Id,props.row.ExtendData.ShouldPaidMoney)">立即支付
+                     style="width:45%;min-width:77px;display:inline" @click="immediatePay(props.row.Id,props.row.TotalMoney)">立即支付
                   </el-button>
                   <el-button
                      size="small"
@@ -114,7 +113,7 @@
           >
           <template slot-scope="props">
               <div style="width:100%;font-weight: bold;color:#878d99;font-size:12px">
-               订单编号：{{props.row.Id ? props.row.Id : '暂无数据'}}
+               订单编号：{{props.row.ExternalId ? props.row.ExternalId : '暂无数据'}}
               </div>
           </template>
         </el-table-column>
@@ -163,7 +162,7 @@
           align="center"
           >
           <template slot-scope="props">
-            <div  v-show="props.row.OrderDetails[0].Content.ExtendData.IsOrdered">
+            <div  v-show="props.row.IsPaid">
               <el-button 
                 v-if="!props.row.IsGenerateInvoice" 
                 size="small" 
@@ -190,7 +189,7 @@ export default {
       multipleSelection: '',
       idsArr: [],
       
-      status:0, //订单状态，0-异常订单，1-已完成，2-已取消 3-正在处理
+      status:0, //订单状态，0-异常订单，1-已完成，2-已取消 3-正在处理111
       auditState: 0,//审核状态，0-审核不通过，1-审核通过，2-还未审核
       invoiceIsHaved:true,
 
@@ -198,16 +197,15 @@ export default {
     }
   },
   beforeCreate(){
-    this.getOrderDivHeight();
+
   },
 
   mounted() {
-    // this.getOrderDivHeight();
+
   },
   updated() {
     //用于去除首列的折叠箭头
     this.removeExpandTableFirstCol();
-    this.getOrderDivHeight();
   },
   
   methods: {
@@ -251,11 +249,17 @@ export default {
           })
        }else if(env == 'prod') {
           //利用localStorage来监听是否支付成功
-          // localStorage.setItem('isOrderPaied',false);
-          // this.timer = setInterval(this.getIsPaiedStatus(),50);
+          localStorage.setItem('isOrderPaied',false);
+          this.timer = setInterval(()=>{
+            if(localStorage.isOrderPaied == 'true'){
+                localStorage.removeItem('isOrderPaied');
+                location.reload();
+                this.$emit('cancleOrder','刷新');
+              }
+            },200);
+          
           SaveArgument(id+'&'+this.formatPrice(ShouldPaidMoney,2));
           OpenForm(1100,600,'/index.html#/PayMethods','选择支付方式');
-          this.$emit('cancleOrder','刷新');
        }
     },
     //取消订单
@@ -381,14 +385,15 @@ export default {
       });
 
       if (this.expands.indexOf(newVal) != -1) {
-        row.isExpand = true;
+        row.isExpand = false;
         this.expands.splice(this.expands.indexOf(newVal), 1);
         this.$set(this.orderList, index, row);
         return;
       }
 
-      row.isExpand = false;
+      row.isExpand = true;
       this.$set(this.orderList, index, row);
+      // this.expands = [];
       this.expands.push(newVal);
     },
    
@@ -411,6 +416,18 @@ export default {
     justify-content: center;
     align-items: center;
   }
+.el-table__expanded-cell{
+  height: 100%;
+}
+.expands-table-cell{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height:100%;
+  float:left;
+  /* overflow:hidden; */
+  border-left:1px solid #e6ebf5
+}
 .order-all {
   @media screen and (max-width: 1210px) {
   .order-all{

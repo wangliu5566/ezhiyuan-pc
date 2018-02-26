@@ -15,8 +15,7 @@
       <el-table 
       v-loading="loading" 
       element-loading-text="数据加载中..."
-      :data="tableData" 
-      :default-sort = "{prop: 'CreateTime', order: 'descending'}"
+      :data="tableData"
       @selection-change="handleSelectionChange" 
       style="width: 100%">
         <el-table-column
@@ -47,7 +46,6 @@
         <el-table-column 
         label="时间" 
         width="180"
-        sortable
         prop="CreateTime">
           <template slot-scope="scope">
             <span>{{scope.row.Content.ExtendData.RelationCreateTime}}</span>

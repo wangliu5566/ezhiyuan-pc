@@ -14,7 +14,7 @@
         width="100%"
         >
           <template slot-scope="props">
-            <div style="width:100%">
+            <div style="width:100%;height:100%;">
               <ul style="width:60%;float:left" class="order-ul">
                <!-- <li v-if="props.row.OrderDetails[0].Content.ObjectTypeDescription == '电路包'" style="padding:10px 0;border-bottom:1px solid #e6ebf5">
                   <span style="display:inline-block;width:48px;heigth:58px">
@@ -35,13 +35,13 @@
                   {{props.row.OrderDetails[0].Count ? props.row.OrderDetails[0].Count :'0'}}
                   </span>
                 </li> -->
-                <li v-for="(item,index) in props.row.OrderDetails" style="height:66px;padding:10px 0;border-bottom:1px solid #e6ebf5">
-                  <span style="display:inline-block;width:48px;heigth:58px;margin-left:10px">
+                <li v-for="(item,index) in props.row.OrderDetails" style="height:66px;line-height:66px;padding:10px 0;border-bottom:1px solid #e6ebf5">
+                  <span style="display:inline-block;width:48px;margin-left:10px">
                     <!-- <img :src="item.Content.CoverUrl" alt="" style="width:100%;vertical-align: middle"> -->
                      <img class="title-span-img" v-if="item.Content.CoverUrl" :src="item.Content.CoverUrl" style="width:100%;vertical-align: middle">
                      <img class="title-span-img" v-else src="../../assets/images/占位符.png" style="width:100%;vertical-align: middle">
                   </span>
-                  <span style="display:inline-block;width:16%;overflow:hidden;text-overflow:hidden;word-wrap:nowrap">
+                  <span style="display:inline-block;width:16%;text-align:left;text-overflow:hidden;word-wrap:nowrap">
                    {{item.Content.Title.length >6 ? item.Content.Title.slice(0,4).concat('...') : item.Content.Title}}
                   </span>
                   <span style="display:inline-block;width:28%;text-align:center">
@@ -55,30 +55,30 @@
                   </span>
                 </li>
               </ul>
-              <div style="width:40%;float:left" class="order-div">
-                <div style="width:25%;float:left;text-align:center;overflow:hidden;border-left:1px solid #e6ebf5" >
+              <div style="width:40%;height:100%;float:left" class="order-div">
+                <div style="width:25%;" class="expands-table-cell">
                   <span>
                     ￥{{formatPrice(props.row.TotalMoney,2)}}
                   </span>
                 </div>
-                <div style="width:44%;float:left;text-align:center;overflow:hidden;border-left:1px solid #e6ebf5">
+                <div style="width:44%;" class="expands-table-cell">
                   <span style="text-align:center">
                    {{props.row.IsPaid == true ? '交易成功' : '未支付'}}
                   </span>
                 </div>
-                <div style="width:31%;float:left;border-left:1px solid #e6ebf5" class="order-div">
-                  <div class="order-div btns">
+                <div class="expands-table-cell" style="width:31%;">
+                  <!-- <div > -->
                     <el-button
                        size="small"
                        type="primary"
-                       style="width:45%;min-width:77px;display:inline" @click="immediatePay(props.row.Id,props.row.ExtendData.ShouldPaidMoney)">立即支付
+                       style="width:45%;min-width:77px;display:inline" @click="immediatePay(props.row.Id,props.row.TotalMoney)">立即支付
                     </el-button>
                     <el-button
                        size="small"
                        type="primary"
                        style="width:45%;min-width:77px;display:inline;background: white;color:#666;border:none"@click="cancelOrder(props.row.Id)">取消订单
                     </el-button>
-                  </div>
+                  <!-- </div> -->
                 </div>
               </div>
             </div>
@@ -89,7 +89,7 @@
           >
           <template slot-scope="props">
               <div style="width:100%;font-weight: bold;color:#878d99;font-size:12px">
-               订单编号：{{props.row.Id ? props.row.Id : '暂无数据'}}
+               订单编号：{{props.row.ExternalId ? props.row.ExternalId : '暂无数据'}}
               </div>
           </template>
         </el-table-column>
@@ -157,15 +157,14 @@ export default {
     }
   },
   beforeCreate(){
-    this.getOrderDivHeight();
+    
   },
   mounted() {
-   // this.getOrderDivHeight();
+
   },
   updated() {
     //用于去除首列的折叠箭头
     this.removeExpandTableFirstCol();
-    this.getOrderDivHeight();
   },
   methods: {
 
@@ -244,9 +243,10 @@ export default {
         this.$set(this.orderList, index, row);
         return;
       }
-
       row.isExpand = true;
       this.$set(this.orderList, index, row);
+      // row.isExpand = false;
+      // this.expands = [];
       this.expands.push(newVal);
     },
    
@@ -261,6 +261,18 @@ export default {
       justify-content: center;
       align-items: center;
     }
+.el-table__expanded-cell{
+  height: 100%;
+}
+.expands-table-cell{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height:100%;
+  float:left;
+  /* overflow:hidden; */
+  border-left:1px solid #e6ebf5
+}
 .order-all {
   @media screen and (max-width: 1560px) {
     .btns{

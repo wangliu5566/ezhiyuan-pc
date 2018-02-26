@@ -9,7 +9,7 @@
                 <span>
                   {{dataObj.CurrentPrice || dataObj.CurrentPrice === 0 ?'￥'+formatPrice(dataObj.CurrentPrice,2):'暂无'}}
                 </span>
-                <p v-show="dataObj.ExtendData.SaleStrategyName ? true : false" class="paper-title-p">价格 
+                <p class="paper-title-p">价格 
                   <span class="price-span">
                   {{dataObj.MarketPrice || dataObj.MarketPrice === 0 ?'￥'+formatPrice(dataObj.MarketPrice,2):'暂无'}}
                   </span>
@@ -19,6 +19,8 @@
                 {{dataObj.ExtendData.SaleStrategyName}}
               </el-button>
               <div class="clearfix"></div>
+              <p>{{dataObj.ExtendData.EnglishTitle ? dataObj.ExtendData.EnglishTitle : '暂无'}}</p>
+              <div class="clearfix"></div>
             </div>
             <div class="clearfix"></div>
             <div class="section-intro">
@@ -26,19 +28,34 @@
                 <b>作者中文名：</b>
                 <span>{{dataObj.Author?dataObj.Author:'暂无'}}</span>
               </p>
-              <!-- <div class="section-author"> -->
               <p class="section-author">
                 <b>中文关键词：</b>
                 <span>{{dataObj.ExtendData.Keywords ? dataObj.ExtendData.Keywords : '暂无'}}</span>
               </p>
-                <!-- <ul>
-                  <li>{{dataObj.ExtendData.Keywords ? dataObj.ExtendData.Keywords : '暂无'}}</li>
-                </ul> -->
-              <!-- </div> -->
               <p class="section-author">
                 <b>收录情况：</b>
                 <span>{{dataObj.ExtendData.Source ? dataObj.ExtendData.Source : '暂无'}}
                 </span>
+              </p>
+              <p class="section-author">
+                <b>英文作者：</b>
+                <span>{{dataObj.ExtendData.EnglishAuthors ? dataObj.ExtendData.EnglishAuthors : '暂无'}}
+                </span>
+              </p>
+              <p class="section-author">
+                <b>所属学科：</b>
+                <span>{{dataObj.ExtendData.Source ? dataObj.ExtendData.Source : '暂无'}}
+                </span>
+              </p>
+              <p class="section-author">
+                <b>知识标签：</b>
+                <span v-if="knowledgeTag.length > 0">
+                  <span  v-for="(item,index) in knowledgeTag" @click="goOtherPage('/ExplicitWordDetail',item.ExplicitWord.Id,item.ExplicitWord.Title)"
+                  style="cursor:pointer" class="expDetail-span" >
+                    {{item.ExplicitWord.Title}}
+                  </span>
+                </span>
+                <span v-else>暂无</span>
               </p>
             </div>
           </el-col>
@@ -87,6 +104,13 @@
             {{dataObj.Abstracts?dataObj.Abstracts:'暂无'}}
           </div>
         </div>
+        <div class="clearfix"></div>
+        <div class="bottom-one">
+          <div class="bottom-title fl"><b>英文摘要：</b></div>
+          <div class="bottom-content fl" :style="{width:(0.8 * winWidth - 110)+ 'px'}">
+            {{dataObj.ExtendData.EnglishAbstract?dataObj.ExtendData.EnglishAbstract:'暂无'}}
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -104,6 +128,7 @@ export default {
 
       loading:true,
       dataObj: {ExtendData:{}},
+      knowledgeTag:[],
       count: 1,
       hasDownLoad:false,
       startDownLoad:false,
@@ -116,8 +141,9 @@ export default {
        this.winHeight = this.setWindow().winHeight;
     }
     this.sectionId = this.$route.query.id || GetArgument().split('=')[1];
-    if(this.paperId!=''){
-      this.getDetail()
+    if(this.sectionId!=''){
+      this.getDetail();
+      this.getKnowledgeTag();
     }else{
       alert('请传入论文详情的Id')
     }
@@ -167,6 +193,27 @@ export default {
             }
           }else{
             this.loading = false;
+            this.$message.error(res.data.Description);
+          }
+        })
+    },
+    //获取相关资源的知识标签
+    getKnowledgeTag(){
+      this.$http.get("/ExplicitWordLabel/List", {
+          params: {
+            objectId: this.sectionId,
+            type:105
+          }
+        })
+        .then((res) => {
+          if (res.data.Success) {
+            if(res.data.Data != []){
+              this.knowledgeTag = res.data.Data.slice(0,30);
+            console.log(this.knowledgeTag)
+            }else{
+              this.knowledgeTag = [];
+            }
+          }else{
             this.$message.error(res.data.Description);
           }
         })
@@ -296,6 +343,16 @@ export default {
       margin-left: 24px;
       text-align: left;
     }
+  }
+  .expDetail-span{
+    display: inline-block;
+    border: 1px solid #1c517d;
+    margin:0 8px 6px 0;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 6px;
+    border-radius: 4px;
+    color: #1c517d;
   }
   .bottom{
     b{

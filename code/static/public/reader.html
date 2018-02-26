@@ -21,7 +21,7 @@
 </head>
 
 <body>
-    <div class="index-cont" :style="{width:winWidth +'px',height:winHeight-10 +'px'}" id="bookCont" ref="bookCont" @mouseleave="bodyMouseenter = false">
+    <div class="index-cont" :style="{width:winWidth +'px',height:winHeight-10 +'px'}" id="bookCont" ref="bookCont" @mouseleave="bodyMouseenter = false" @mousemove="btnMove" @mouseup="btnEnd">
         <div style="position: fixed;left: 0;top:0;z-index: 99999;display: flex;justify-content: center;align-items: center; width: 100%;height: 100%;background: white;" id="loadMenban">
             
         </div>
@@ -64,7 +64,17 @@
             </div>
        </div>
        
-        <iframe :src="iframeSrc" frameborder="0" width="90%" height="100%" id="bookContIframe" ref="bookIframe" align="middle" ></iframe>
+
+       <!-- :src="iframeSrc"  -->
+
+        <iframe 
+        frameborder="0" 
+        width="90%" 
+        height="100%" 
+        id="bookContIframe" 
+        ref="bookIframe" 
+        align="middle" 
+        ></iframe>
 
         <div class="loading-content" v-show="loading">
              
@@ -76,30 +86,21 @@
         </div>
 
 
-        <!-- 切换设备 -->
-        <div class="modal fade" tabindex="-1" role="dialog" id="equipement">
-          <div class="modal-dialog" role="document" style="width: 480px;height:400px;margin:0 auto">
-            <div class="modal-content">
-              <div class="modal-header nopadding" id="activeTitle">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="equipement">设备切换</h4>
-              </div>
-              <div class="modal-body">
-                    <div class="select">
-                        <span>我的设备：<b id="myEqu"></b></span>
-                        <input type="button" name="" class='mybtn1' value="确定" id="changeEquip">
-                    </div>
-                    <div class="checkbox" id="equipList">
-                         <!-- 设备列表 -->
-                    </div>
-              </div>
-
-            </div><!-- /.modal-content -->
-          </div><!-- /.modal-dialog -->
+        <!-- 进度条  -->
+        <div class="opacity-bar" :style="{width:'200px',right:'-70px'}" v-show="isProgressBarShow" ref="opactityBarCont">
+          <div class="scroll-bar-progress-cont" @click="handleChangeProgress">
+            <div class="scroll-bar-progress" :style="{width:opacityPercent +'%'}">
+            </div>
+            <div class="scroll-btn" @click.stop="" @mousedown.stop="btnStart" :style="{left:btnPosition - 10  + 'px'}">
+            </div>
+          </div>
         </div>
 
+        <button class="percent-btn" @click.stop="isProgressBarShow = !isProgressBarShow">进度</button>
 
 
+        
+        <!-- 右键菜单 -->
         <ul class="context-menu" :style="{left:conMenuLeft+'px',top:conMenuTop + 'px'}" v-show="conMenuShow">
             <li :class="menuListDisable.copy?'':'menu-disabled'" @click="closeMenuAndDo($event,'copy')">复制</li>
             <li @click="closeMenuAndDo($event,'collect')">{{menuListDisable.collect?'收藏':'取消收藏'}}</li>
@@ -189,7 +190,17 @@
             searchConf:null,
             formId:'',
 
-            expLableData:[]
+            rootUrl:'',
+
+            expLableData:[],
+
+
+              btnScroll: false,
+              btnPosition: 0,
+              baroffsetTop: 200,
+              barHeight: 200,
+              opacityPercent: 0,
+              isProgressBarShow:false
         },
         methods: {
             setWindow() {
@@ -232,16 +243,24 @@
                 for(var i = 0 ; i < listofImg.length ; i ++) {
                     if($(listofImg[i]).attr('src') && $(listofImg[i]).attr('src').indexOf('/static/images') !== -1) continue;
                     if(!$(listofImg[i]).parent().hasClass('center')) continue;
-                    
-// maxHeight:_this.winHeight * 0.8 +'px'
+
                     var imgHeight =  parseInt($(listofImg[i]).css('height'));
+
+                    //图片的宽高一般不会为0,如果为0，一般是切换了章节未等图片加载就渲染导致的，所以需要200毫秒后再设置
+                    if(parseInt($(listofImg[i]).css('width')) <= 0 || parseInt($(listofImg[i]).css('height')) <= 0) {
+                       setTimeout(function() {
+                         _this.setIframeImg();
+                       },200)
+                       break;
+                    }
+
+                    
                     imgHeight = imgHeight >= _this.winHeight* 0.8?_this.winHeight * 0.8:imgHeight;
 
                     $(listofImg[i]).parent().css({
                        '-webkit-column-break-inside':'avoid', 
                        'height':imgHeight + 30 +'px'
                     })
-
 
                     $(listofImg[i]).attr('class','');
 
@@ -250,13 +269,6 @@
                        maxHeight:'90%'
                     })
 
-                    // if(winWidthRate > winHeightRate) {
-                    //     $(listofImg[i]).css('width',parseInt(getComputedStyle(listofImg[i],null).width)*winHeightRate + 'px');
-                    //     $(listofImg[i]).css('height',parseInt(getComputedStyle(listofImg[i],null).height)*winHeightRate + 'px');
-                    // }else {
-                    //     $(listofImg[i]).css('width',parseInt(getComputedStyle(listofImg[i],null).width)*winWidthRate + 'px');
-                    //     $(listofImg[i]).css('height',parseInt(getComputedStyle(listofImg[i],null).height)*winWidthRate + 'px');
-                    // }
                 }
             },
             //根据屏幕缩放文内图片变化
@@ -417,7 +429,6 @@
                 // this.isShowLibList = type == 0 ? true : false;
                 if (this.libLeft <= -280) {
                     var setTime = setInterval(() => {
-                        console.log(1111)
                         if (this.libLeft >= -20) {
                             this.libLeft = 0;
                             clearInterval(setTime);
@@ -593,7 +604,6 @@
              * @return   {[type]}   [description]
              */
             getExplicitWordLabelList(level) {
-                console.log(level + 'xxx')
                 var data = {
                         objectId:this.sectionid,
                         type:this.sectionType,
@@ -724,7 +734,7 @@
                           //如果有克隆的节点，说明需要替换原节点
                           if(nodeClone) {
                              // var nodeCloneHtml = $(nodeClone).html();
-                             var cssText = 'position:absolute;width:auto;height:24px;line-height:24px; font-size:14px;min-width:120px;opacity:0.5;transform: translateY(-13px);text-indent: initial;color:white;text-align:center;box-shadow:2px 2px 5px #888;background-size:100% 100%;background-position:center center;cursor:pointer'; 
+                             var cssText = 'display:flex;justify-content:center;align-items:center;position:absolute;min-height:26px;white-space:nowrap;font-size:14px;line-height:1.2em;min-width:120px;opacity:0.5;transform: translateY(-13px);text-indent: initial;color:white;box-shadow:2px 2px 5px #888;background-size:100% 100%;background-position:center center;cursor:pointer'; 
 
                              //切中间和结尾
                              expOffsets.forEach((sitem,sindex)=>{
@@ -798,18 +808,30 @@
             changeIframeSrc(src,index,clickItemId) {
                 // if ((!index && index !== 0) && !src) return;
                 if (src) {
+                    //关闭目录
                     if(this.libLeft >= -280) {
                        this.openLibCate();
                     }
 
+                    //关闭进度条
+                    this.isProgressBarShow = false;
+
+
+                    //寻找对应目录的锚点
                     let achor = this.sectionLibList[index].Achor;
                     let aimAchor = $(this.bookIframeWindow.document.body).find('*[id="'+achor+'"]').get(0);
 
-                   this.countLeft = aimAchor.offsetLeft;
-                   
-                    setTimeout(()=>{
-                        this.bookIframeWindow.document.body.scrollLeft = this.countLeft;
-                    }, 500)
+                    if(aimAchor) {
+                        //如果寻找到对应的锚点，说明是在当前章里进行跳转
+                        this.countLeft = aimAchor.offsetLeft;
+                       
+                        setTimeout(()=>{
+                            this.bookIframeWindow.document.body.scrollLeft = this.countLeft;
+                        }, 500)
+                    }else {
+                        //如果没有找到，说明需要切换章节
+                        this.getFileData(src);
+                    }
                     return;
                 }
 
@@ -1078,9 +1100,17 @@
                 } else {
                     if (type == -1) {
                         action = -2;
+                        if(this.fontCount <= -3) {
+                            this.message.showMessage('info','当前已经是最小字体！');
+                            return;
+                        }
                         this.fontCount--;
                     } else if (type == 1) {
                         action = 2;
+                        if(this.fontCount  >= 8) {
+                            this.message.showMessage('info','当前已经是最大字体！');
+                            return;
+                        }
                         this.fontCount++;
                     }
 
@@ -1125,6 +1155,50 @@
 
 
             },
+
+            //进度控制
+           btnStart() {
+            this.btnScroll = true;
+           },
+           btnMove(e) {
+            if (this.btnScroll) {
+              //这是按钮的位置
+              // this.btnPosition = (1 - (e.pageY - this.baroffsetTop) / this.barHeight) * this.barHeight;
+              this.btnPosition = (1 - (e.pageY - this.$refs.opactityBarCont.offsetTop + this.barHeight/2 - 14) / this.barHeight) * this.barHeight;
+
+              if (this.btnPosition <= 0) {
+                this.btnPosition = 0;
+              } else if (this.btnPosition >= this.barHeight) {
+                this.btnPosition = this.barHeight;
+              }
+
+              //同时改变进度条
+              this.opacityPercent = this.btnPosition / this.barHeight * 100;
+              
+              //改变图片透明度
+            }
+          },
+           btnEnd() {
+            if(this.btnScroll) {
+              this.changeProgress();
+            }
+
+            this.btnScroll = false;
+           },
+           
+           //点击修改进度
+           handleChangeProgress(e) {
+                this.btnPosition = this.$refs.opactityBarCont.offsetTop + this.barHeight/2 - e.pageY + 7;
+                this.opacityPercent = this.btnPosition / this.barHeight * 100;
+                this.changeProgress();
+           },
+           
+           //执行进度条控制操作
+           changeProgress() {
+              this.countLeft = this.opacityPercent * this.bookIframeWindow.document.body.scrollWidth / 100;
+
+              this.bookIframeWindow.document.body.scrollLeft = this.countLeft;
+           },
             //页码操作
             togglePageNum(type) {
                 //设置页码
@@ -1244,6 +1318,7 @@
             pageExchange(type) {
                 //手动翻页，清除之前保存的左上角第一个元素
                 this.firstEle = null;
+                this.isProgressBarShow = false;
 
                 switch (type) {
                     case -1:
@@ -1263,6 +1338,8 @@
                         // statements_def
                         break;
                 }
+
+
             },
             //通过按键上下页切换
             changePageByKeyDown(e) {
@@ -1304,6 +1381,11 @@
                         clearInterval(obj.timer);
                         obj.timer = null;
                         obj.scrollLeft = target;
+
+
+                        _this.btnPosition = _this.readPercent/ 100  *  _this.barHeight + 7;
+                        _this.opacityPercent = _this.readPercent;
+       
                     } else {
                         obj.scrollLeft = left;
                     }
@@ -1487,7 +1569,37 @@
                 }
              }
           });
-        },     
+        }, 
+
+
+        //获取资源文件加密后的数据，并解密，写入iframe
+        getFileData:function getFileData(url,key) {
+              var _this = this;
+              var res = GetContentString(url);
+
+              if(res !== '') {
+                res = res.replace(/src="/g,'src="'+_this.rootUrl);
+                res = res.replace(/href="/g,'href="'+_this.rootUrl);
+              }else return;
+               
+               this.$refs.bookIframe.contentWindow.document.body.innerHTML = res;
+
+               function setIframeLoad() {
+                  if(window.iframeOnload) {
+                      iframeOnload(_this.$refs.bookIframe);
+                      _this.countLeft = 0;
+                      _this.bookIframeWindow.document.body.scrollLeft = _this.countLeft;
+                   }else {
+                      setTimeout(function() {
+                        setIframeLoad();
+                        _this.countLeft = 0;
+                        _this.bookIframeWindow.document.body.scrollLeft = _this.countLeft;
+                      },100)
+                   }
+               }
+
+               setIframeLoad();
+          },    
         },
         created() {
             // setTimeout(()=>{
@@ -1535,9 +1647,15 @@
 
                     this.sectionLibList = JSON.parse(a);
 
-                    console.log(this.sectionLibList)
+                    this.rootUrl = this.sectionLibList[0].Src.slice(0,this.sectionLibList[0].Src.lastIndexOf('\\') + 1);
 
-                    this.iframeSrc = this.sectionLibList[0].Src;
+
+                    this.getFileData(this.sectionLibList[0].Src);
+                    
+
+                    // console.log(GetContentString(this.sectionLibList[0].Src));
+
+                    // this.iframeSrc = this.sectionLibList[0].Src;
 
                     var _this = this;
                    

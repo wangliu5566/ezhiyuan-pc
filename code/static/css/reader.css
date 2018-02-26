@@ -181,7 +181,7 @@ li {
 
 .book-cont-bottom span:nth-child(2) {
     display: inline-block;
-    margin-right: 6%;
+    margin-right: 65px;
 }
 
 .page-exchange {
@@ -482,4 +482,79 @@ li {
 
 .exp-lablel {
     background: red;
+}
+
+
+
+.scroll-bar-progress-cont {
+    overflow: hidden;
+    width: 100%;
+    height: 15px;
+    /*border-radius: 10px;*/
+    background: #6486BB;
+    cursor: pointer;
+}
+
+.scroll-bar-progress {
+    background: #b5c6e2;
+    height: 100%;
+}
+
+.scroll-bar:hover {
+    opacity: 1
+}
+
+.scroll-btn {
+    position: absolute;
+    top: -8px;
+    width: 14px;
+    height: 30px;
+    /*border-radius: 50%;*/
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0px 0px 5px #aaa;
+    cursor: pointer;
+}
+
+.el-progress--line {
+ margin-top: 5px;
+ margin-left: 5px;
+ width: 90%
+}
+
+.opacity-bar {
+    position: fixed;
+    // right: -200px;
+    bottom: 135px;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transform: rotate(-90deg);
+    height: 15px;
+    // width: 500px;
+    /*margin-top: -40px;*/
+    /*border-radius: 10px;*/
+    /*background: black;*/
+}
+
+.opacity-bar button {
+    height: 30px;
+    width: 30px;
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #999;
+    border: none;
+}
+
+.percent-btn {
+    position: fixed;
+    right: 10px;
+    bottom:8px;
+    outline: none;
+    background: none;
+    border: 1px solid #1c517d;
+    border-radius: 5px;
 }

@@ -86,6 +86,10 @@ export default {
   mounted(){
     this.getList();
     this.getSliderDivHeight();
+    window.onresize = ()=> {
+       this.winWidth = this.setWindow().winWidth;
+       this.winHeight = this.setWindow().winHeight;
+    }
   },
   watch:{
     'objectType':function(nv) {

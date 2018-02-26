@@ -145,7 +145,9 @@ export default {
           params: {
             parentId:this.childId,
             type: 'standard',
-            isSelf:false
+            isSelf:false,
+            ps:1000,
+            cp:1,
           }
         })
         .then((res) => {
@@ -206,7 +208,10 @@ export default {
   mounted(){
     this.getList();
     this.getSliderDivHeight();
-    
+    window.onresize = ()=> {
+       this.winWidth = this.setWindow().winWidth;
+       this.winHeight = this.setWindow().winHeight;
+    }
   },
   watch:{
     'objectType':function(nv) {

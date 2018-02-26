@@ -9,11 +9,16 @@
                 <span>
                   {{dataObj.CurrentPrice || dataObj.CurrentPrice === 0 ?'￥'+ formatPrice(dataObj.CurrentPrice,2):'暂无'}}
                 </span>
-                <p v-show="dataObj.ExtendData.SaleStrategyName ? true : false">价格 
+                <p>价格 
                   <span class="price-span">
                   {{dataObj.MarketPrice || dataObj.MarketPrice === 0 ?'￥'+formatPrice(dataObj.MarketPrice,2):'暂无'}}
                   </span>
                 </p>
+                <!-- <p v-show="dataObj.ExtendData.SaleStrategyName ? true : false">价格 
+                  <span class="price-span">
+                  {{dataObj.MarketPrice || dataObj.MarketPrice === 0 ?'￥'+formatPrice(dataObj.MarketPrice,2):'暂无'}}
+                  </span>
+                </p> -->
               </h3>
               <el-button v-show="dataObj.ExtendData.SaleStrategyName ? true : false" disabled>
                 {{dataObj.ExtendData.SaleStrategyName}}
@@ -72,7 +77,6 @@
                    :disabled="(downLoadPercent == 0 && startDownLoad) || (downLoadPercent != 0 && downLoadPercent != 100)">
 
                       {{ hasDownLoad ? '阅读' : (downLoadPercent == 0 && !startDownLoad? '点击下载' : downLoadPercent +'%')}}
-
                     </el-button>
                </div>
             </div>
@@ -250,6 +254,16 @@ export default {
               }
             })
         }else if(env == 'prod') {
+          this.$http.post("/Content/Authorize", {
+            id:this.sectionId,
+            authorizeToken:item.ExtendData.AuthorizeToken
+          })
+          .then((res) => {
+            console.log(res.data)
+          })
+
+          console.log(GetDeviceKey())
+          console.log(GetDevicekToken())
 
           var data = {
               objectId:item.Id,

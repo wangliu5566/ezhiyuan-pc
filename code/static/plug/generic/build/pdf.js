@@ -1493,6 +1493,8 @@ function MessageHandler(name, comObj) {
   }];
 
   comObj.onmessage = function messageHandlerComObjOnMessage(event) {
+    console.log('in');
+    console.log(event.data)
     var data = event.data;
     if (data.isReply) {
       var callbackId = data.callbackId;

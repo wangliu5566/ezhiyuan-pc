@@ -20,11 +20,11 @@
   right: 0;
   bottom: 0;
   overflow: hidden;
-  opacity: 0.2;
+  /*opacity: 0.2;*/
 }
 
 .textLayer > div {
-  color: transparent;
+  /*color: transparent;*/
   position: absolute;
   white-space: pre;
   cursor: text;
@@ -64,6 +64,7 @@
 
 .pdfViewer .canvasWrapper {
   overflow: hidden;
+  display: none;
 }
 
 .pdfViewer .page {

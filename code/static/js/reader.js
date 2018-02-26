@@ -149,7 +149,6 @@
            }
        })
        
-console.log(sameLables.length)
 
        for(var i = 0 ; i < sameLables.length ; i ++) {
           if($(sameLables[i]).hasClass('active-lable')) {
@@ -326,6 +325,7 @@ console.log(sameLables.length)
         //左侧目录栏收起
         $(iframeEle.contentWindow.document.body).on('click', function(e) {
             _this.$data.conMenuShow = false;
+            _this.$data.isProgressBarShow = false;
             CloseMenueStrip();
             EnableTabIcon(1); //1-epub 2-pdf 3多媒体
 

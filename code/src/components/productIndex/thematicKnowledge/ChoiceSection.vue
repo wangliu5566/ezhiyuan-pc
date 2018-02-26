@@ -106,6 +106,8 @@ export default {
           params: {
             categoryIds: this.oneChildId,
             objectTypes: 108,
+            ps:1000,
+            cp:1,
           }
         })
         .then((res) => {
@@ -157,6 +159,8 @@ export default {
           params: {
             categoryIds: this.childId,
             objectTypes: 108,
+            ps:1000,
+            cp:1
           }
         })
         .then((res) => {
@@ -194,6 +198,10 @@ export default {
     console.log(this.index)
     console.log(this.objectType)
     this.getList();
+    window.onresize = ()=> {
+       this.winWidth = this.setWindow().winWidth;
+       this.winHeight = this.setWindow().winHeight;
+    }
   },
   updated(){
     this.getDivHeight();

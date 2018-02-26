@@ -217,23 +217,26 @@ export default {
         .then((res) => {
           console.log(res)
           if (res.data.Success) {
-            
-              this.$message({
-                message: '成功加入购物车',
-                type: 'success'
-              });
               if(isPay){
                 this.goToUrl('/shoppingCar',{
                    query:[{
                      userId: localStorage.userId,
+                   },{
+                    shoppingCarId:res.data.Data.shoppingCart
                    }],
                    winType:'购物车',
                    winTitle:'购物车',
                    isIndForm:true,
                 });
-              };
+              }else{
+                this.$message({
+                  message: '成功加入购物车',
+                  type: 'success'
+                });
+              }
               // location.reload();
              if(env == 'prod') {
+              SaveArgument('shoppingCarId='+res.data.Data.shoppingCart);
               this.getDetail();
               this.getShoppingCarList();
              }
@@ -583,22 +586,23 @@ export default {
      * @DateTime 2017-12-17
      */
       Vue.prototype.getOrderDivHeight = function(){
-        // var listGroup = document.getElementsByClassName('el-table__expanded-cell');
-        var minHeight = $('.order-ul').innerHeight();
-        // console.log(minHeight)
-        if(minHeight == 'undefined'){
-            $('.order-div').css({
-              'minHeight':66 + 'px',
-              'lineHeight':66 + 'px',
-           });
-         }else{
-           $('.order-div').css({
-              'minHeight':minHeight + 'px',
-              'lineHeight':minHeight + 'px',
-           });
-
-           $('.btns').css('lineHeight','40px');
-         } 
+          // console.log(index)
+          // console.log($('.order-ul'))
+          var minHeight = $('.order-ul').innerHeight();
+          // console.log(minHeight)
+          if(minHeight == 'undefined'){
+              $('.order-div').css({
+                'minHeight':87 + 'px',
+                'lineHeight':87 + 'px',
+              });
+              $('.btns').css('lineHeight','40px');
+           }else{
+             $('.order-div').css({
+                'minHeight':minHeight + 'px',
+                'lineHeight':minHeight + 'px',
+             });
+             $('.btns').css('lineHeight','40px');
+           }
       };
 
       Vue.prototype.setWindow = function() {
@@ -676,6 +680,7 @@ export default {
          if(options.query.length !== 0) {
             SaveArgument(queryStr);
          }
+         console.log(path,options.winType,options.winTitle,options.isIndForm)
          loadForm('/index.html#' + path,options.winType,options.winTitle,options.isIndForm)
        } 
     }
@@ -787,10 +792,10 @@ export default {
            return 
        }
 
-       if(!localStorage.accessToken || !localStorage.accessTokenExpTime || new Date(localStorage.accessTokenExpTime).getTime() - new Date().getTime() < 1000 * 60 * 2 ) {
-       
+       // if(!localStorage.accessToken || !localStorage.accessTokenExpTime || new Date(localStorage.accessTokenExpTime).getTime() - new Date().getTime() < (1000 * (60 * 118))) {
+
           //AccessToken 不存在 或 过期时间不存在  或 过期时间小于 2分钟，都要重新去登录更新AccessToken
-          // var loginUrl = env == 'dev' ? baseUrl + '/Passport/Login' : transferLoginUrl;  
+ 
           this.$http.post('/Passport/Login', {
             account: localStorage.account,
             password: localStorage.password,
@@ -804,8 +809,42 @@ export default {
               if(callback) callback();
             }
           })
-       }
+       // }
     }
+
+
+     // Vue.prototype.myAjax = function(url,type,data,success,failed){
+     //      var xhr;
+     //      if(window.XMLHttpRequest) {
+     //        xhr = new XMLHttpRequest();
+     //      } else {
+     //        xhr = new ActiveXObject('Microsoft.XMLHTTP');
+     //      }
+
+     //      var queryStr = '';
+     //      for(var i in data) {
+     //         queryStr += i + '=' + data[i] + '&';
+     //      }
+
+     //      queryStr = queryStr.slice(0,-1);
+          
+     //      xhr.open(type, url + '?' + queryStr, true);
+     //      xhr.send();
+
+     //      xhr.onreadystatechange = function() {
+     //        if(xhr.readyState === 4) {
+     //          if(xhr.status === 200){
+     //            if(success){
+     //              success(xhr.responseText);
+     //            }
+     //          }else{
+     //            if(failed){
+     //              failed()
+     //            }
+     //          } 
+     //         }
+     //       }
+     //     } 
 
 
     /**

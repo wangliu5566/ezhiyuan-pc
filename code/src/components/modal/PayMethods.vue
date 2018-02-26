@@ -60,15 +60,28 @@ export default {
         }
         var backUrl = "http://phei.kingchannels.cn/Pay/index.html#/PaySuccess?id=" + this.orderId +"&payTotal=" + this.payTotal +"&type=" + this.payType
         if(env == 'dev'){
-           window.location.href="http://api.phei.kingchannels.cn/Pay/Index?orderId=" + this.orderId + "&payType=" + this.payType + "&returnUrl=" + encodeURIComponent(backUrl) + "&appId=" + systemParams.appId +"&version=" + systemParams.version +"&deviceToken=" + encodeURIComponent(systemParams.deviceToken) +"&timestamp=" + systemParams.timestamp +"&appVersion=" + systemParams.appVersion +"&accessToken=" + encodeURIComponent(localStorage.accessToken);
+           // var data = {
+           //    orderId:this.orderId,
+           //    payType:this.payType,
+           //    appId:systemParams.appId,
+           //    version:systemParams.version,
+           //    deviceToken:systemParams.deviceToken,
+           //    timestamp:systemParams.timestamp,
+           //    appVersion:systemParams.appVersion,
+           //    accessToken:encodeURIComponent(localStorage.accessToken),
+           //    returnUrl:encodeURIComponent(backUrl)
+           //  }
+            // console.log(data)
+            //  console.log("http://218.249.32.176:50680/Pay/Index?orderId=" + this.orderId + "&payType=" + this.payType + "&returnUrl=" + encodeURIComponent(backUrl) + "&appId=" + systemParams.appId +"&version=" + systemParams.version +"&deviceToken=" + encodeURIComponent(systemParams.deviceToken) +"&timestamp=" + systemParams.timestamp +"&appVersion=" + systemParams.appVersion +"&accessToken=" + encodeURIComponent(localStorage.accessToken))
+           window.location.href="http://218.249.32.176:50680/Pay/Index?orderId=" + this.orderId + "&payType=" + this.payType + "&returnUrl=" + encodeURIComponent(backUrl) + "&appId=" + systemParams.appId +"&version=" + systemParams.version +"&deviceToken=" + encodeURIComponent(systemParams.deviceToken) +"&timestamp=" + systemParams.timestamp +"&appVersion=" + systemParams.appVersion +"&accessToken=" + encodeURIComponent(localStorage.accessToken);
         }else if(env == 'prod'){
           SetWidthHeight(1100,800);
           // SetFormTitle('支付成功');
           if(Object.keys(localStorage).indexOf('isOrderPaied') !== -1) {
             localStorage.setItem('isOrderPaied',true);
-             window.location.href="http://api.phei.kingchannels.cn/Pay/Index?orderId=" + this.orderId + "&payType=" + this.payType + "&returnUrl=" + encodeURIComponent(backUrl) + "&appId=" + systemParams.appId +"&version=" + systemParams.version +"&deviceToken=" + encodeURIComponent(systemParams.deviceToken) +"&timestamp=" + systemParams.timestamp +"&appVersion=" + systemParams.appVersion +"&accessToken=" + encodeURIComponent(localStorage.accessToken);
+             window.location.href="http://218.249.32.176:50680/Pay/Index?orderId=" + this.orderId + "&payType=" + this.payType + "&returnUrl=" + encodeURIComponent(backUrl) + "&appId=" + systemParams.appId +"&version=" + systemParams.version +"&deviceToken=" + encodeURIComponent(systemParams.deviceToken) +"&timestamp=" + systemParams.timestamp +"&appVersion=" + systemParams.appVersion +"&accessToken=" + encodeURIComponent(localStorage.accessToken);
           }else{
-             window.location.href="http://api.phei.kingchannels.cn/Pay/Index?orderId=" + this.orderId + "&payType=" + this.payType + "&returnUrl=" + encodeURIComponent(backUrl) + "&appId=" + systemParams.appId +"&version=" + systemParams.version +"&deviceToken=" + encodeURIComponent(systemParams.deviceToken) +"&timestamp=" + systemParams.timestamp +"&appVersion=" + systemParams.appVersion +"&accessToken=" + encodeURIComponent(localStorage.accessToken);
+             window.location.href="http://218.249.32.176:50680/Pay/Index?orderId=" + this.orderId + "&payType=" + this.payType + "&returnUrl=" + encodeURIComponent(backUrl) + "&appId=" + systemParams.appId +"&version=" + systemParams.version +"&deviceToken=" + encodeURIComponent(systemParams.deviceToken) +"&timestamp=" + systemParams.timestamp +"&appVersion=" + systemParams.appVersion +"&accessToken=" + encodeURIComponent(localStorage.accessToken);
           }
         }
       }else if(this.payType == 'weixin'){
@@ -120,33 +133,18 @@ export default {
               
           })
       }
-      
-      // var data = {
-      //   orderId:this.orderId,
-      //   payType:this.payType,
-      //   appId:systemParams.appId,
-      //   version:systemParams.version,
-      //   deviceToken:systemParams.deviceToken,
-      //   timestamp:systemParams.timestamp,
-      //   appVersion:systemParams.appVersion,
-      //   accessToken:encodeURIComponent(localStorage.accessToken),
-      //   returnUrl:encodeURIComponent(backUrl)
-      // }
-      // console.log("http://api.phei.kingchannels.cn/Pay/Index?orderId=" + this.orderId + "&payType=" + this.payType + "&returnUrl=" + encodeURIComponent("http://phei.kingchannels.cn/Pay/index.html#/PaySuccess?id=" + this.orderId +"&payTotal=" + this.payTotal +"&type=" + this.payType) + "&appId=" + systemParams.appId +"&version=" + systemParams.version +"&deviceToken=" + encodeURIComponent(systemParams.deviceToken) +"&timestamp=" + systemParams.timestamp +"&appVersion=" + systemParams.appVersion +"&accessToken=" + encodeURIComponent(localStorage.accessToken))
-     
-       // var params = {};
+      //  var params = {};
       // params = {
       //   orderId: this.orderId,
-      //   userId:this.userId,
       //   payType:this.payType,
-      //   returnUrl:encodeURIComponent(backUrl)
+      //   returnUrl:'http://api.doc.kingchannels.cn'
       // }
       // console.log(params);
       // this.$http.get("/Pay/Index", {params})
       //   .then((res) => {
       //     if(env == 'dev'){
       //       console.log(res.data);
-      //       $('#pay').append(res.data);
+      //       // $('#pay').append(res.data);
       //     }else if(env == 'prod'){
       //         SetWidthHeight(1100,800);
       //         if(Object.keys(localStorage).indexOf('isOrderPaied') !== -1) {

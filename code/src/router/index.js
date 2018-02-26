@@ -30,6 +30,12 @@ export default new Router({
       name:'忘记密码',
       component: resolve => require(['@/components/loginIndex/ForgetPsd'], resolve)
     },
+    //修改密码页面
+    {
+      path: '/EditPassword',
+      name:'修改密码',
+      component: resolve => require(['@/components/loginIndex/EditPassword'], resolve)
+    },
      //个人资料
     {
       path: '/PersonalCenter',
@@ -233,6 +239,10 @@ export default new Router({
       path: '/InvoiceDetail',
       name: '发票详情',
       component: resolve => require(['@/components/modal/InvoiceDetail.vue'], resolve)
+    },{
+      path: '/ForceUpdate',
+      name: '强制更新',
+      component: resolve => require(['@/components/modal/ForceUpdate.vue'], resolve)
     },
       
   ]

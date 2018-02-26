@@ -5,7 +5,7 @@
         <div class="standard-img fl">
           <img :src="dataObj.CoverUrl" alt="">
         </div>
-        <div class="standard-right fl" :style="{width:(0.9 * winWidth - 192) + 'px',minWidth:350 + 'px'}">
+        <div class="standard-right fl" :style="{width:(0.9 * winWidth - 192) + 'px',minWidth:600 + 'px'}">
           <el-row>
             <el-col :span="20">
               <div class="circuit-title-left">
@@ -13,7 +13,7 @@
                   <span>
                     {{dataObj.CurrentPrice || dataObj.CurrentPrice === 0 ?'￥'+formatPrice(dataObj.CurrentPrice,2):'暂无'}}
                   </span>
-                  <p v-show="dataObj.ExtendData.SaleStrategyName ? true : false">价格 
+                  <p>价格 
                     <span class="price-span">
                     {{dataObj.MarketPrice || dataObj.MarketPrice === 0 ?'￥'+formatPrice(dataObj.MarketPrice,2):'暂无'}}
                     </span>
@@ -24,6 +24,34 @@
                 </el-button>
                 <div class="clearfix"></div>
               </div>
+              <div class="section-intro">
+                <p class="section-author">
+                  <b>设计任务：</b>
+                  <span>{{dataObj.Abstracts?dataObj.Abstracts:'暂无'}}</span>
+                </p>
+                <p class="section-author">
+                  <b>作者：</b>
+                  <span>{{dataObj.Author?dataObj.Author:'暂无'}}</span>
+                </p>
+                <p class="section-author">
+                  <b>出版社：</b>
+                  <span>{{dataObj.Publisher?dataObj.Publisher:'暂无'}}</span>
+                </p>
+                <p class="section-author">
+                  <b>知识标签：</b>
+                  <span v-if="knowledgeTag.length > 0">
+                    <span  v-for="(item,index) in knowledgeTag" @click="goOtherPage('/ExplicitWordDetail',item.ExplicitWord.Id,item.ExplicitWord.Title)"
+                    style="cursor:pointer" class="expDetail-span" >
+                      {{item.ExplicitWord.Title}}
+                    </span>
+                  </span>
+                  <span v-else>暂无</span>
+                </p>
+                <!-- <span class="standard-intro-span fl">设计任务：</span>
+                <div class="standard-intro-div fl">
+                  {{dataObj.Abstracts ? dataObj.Abstracts :'暂无'}}
+                </div> -->
+              </div>
             </el-col>
             <el-col :span="4">
               <div class="circuit-title-right fr" >
@@ -32,29 +60,51 @@
                 <p>{{isFavorite?'已收藏':'点击收藏'}}</p>
               </div>
               <div class="clearfix"></div>
+              <div class="right-button">
+                 <el-button 
+                 v-show="dataObj.ExtendData.IsOrdered ? !dataObj.ExtendData.IsOrdered : !dataObj.ExtendData.IsJoinedCart" 
+                 @click="addToShoppingCar(dataObj,true)"
+                 style="width:90px">
+                   购买
+                 </el-button>
+                <!--  <el-button 
+                 @click="goConfirmBtn('/confirmOrder',dataObj)"
+                 v-show="!dataObj.ExtendData.IsOrdered"
+                 >
+                   直接购买
+                 </el-button> -->
+                 <el-button 
+                 type="primary"
+                 :disabled="dataObj.ExtendData.IsJoinedCart ? true : false" 
+                 v-show="!dataObj.ExtendData.IsOrdered"
+                 @click="addToShoppingCar(dataObj)"
+                 >
+                 {{dataObj.ExtendData.IsJoinedCart ? '已加入购物车':'加入购物车'}}
+                 </el-button>
+             </div>
             </el-col>
           </el-row>
           <div class="clearfix"></div>
-          <div class="section-intro">
+          <!-- <div class="section-intro">
             <span class="standard-intro-span fl">设计任务：</span>
             <div class="standard-intro-div fl">
               {{dataObj.Abstracts ? dataObj.Abstracts :'暂无'}}
             </div>
           </div>
-          <div class="clearfix"></div>
-          <div class="right-button fr">
+          <div class="clearfix"></div> -->
+          <!-- <div class="right-button fr">
              <el-button 
              v-show="dataObj.ExtendData.IsOrdered ? !dataObj.ExtendData.IsOrdered : !dataObj.ExtendData.IsJoinedCart" 
              @click="addToShoppingCar(dataObj,true)"
              >
                购买
              </el-button>
-            <!--  <el-button 
+            <el-button 
              @click="goConfirmBtn('/confirmOrder',dataObj)"
              v-show="!dataObj.ExtendData.IsOrdered"
              >
                直接购买
-             </el-button> -->
+             </el-button>
              <el-button 
              type="primary"
              :disabled="dataObj.ExtendData.IsJoinedCart ? true : false" 
@@ -63,7 +113,7 @@
              >
              {{dataObj.ExtendData.IsJoinedCart ? '已加入购物车':'加入购物车'}}
              </el-button>
-         </div>
+                   </div> -->
         </div>
       </div>
       <div class="list">
@@ -82,13 +132,13 @@
          <el-table-column type="expand" >
             <template slot-scope="props" >
               <div class="boxs" @contextmenu.prevent="" v-if="props.row.ObjectType == 111">
-                <div class="pics" v-for="(item,index) in props.row.imgList">
-                  <img 
+                <div class="pics":style="{background:'url('+item.CoverUrl+')',backgroundSize:'cover',backgroundRepeat:'no-repeat',backgroundPosition:'center',cursor:'pointer'}" v-for="(item,index) in props.row.imgList" @click="toVideoOrImgView(item,dataObj.Id,dataObj.Title)">
+                  <!-- <img 
                   :src="item.CoverUrl" 
                   alt="" 
                   :style="{width: 0.077 * winWidth +'px',minWidth:150 + 'px'}"
                   @click="toVideoOrImgView(item,dataObj.Id,dataObj.Title)"
-                  >
+                  > -->
                 </div>
               </div>
             </template>
@@ -166,6 +216,7 @@ export default {
       tableData: [],
       count:1,
       dataObj: {ExtendData:{}},
+      knowledgeTag:[],
       packageId:null,
       expands: ['img'],
       expRepeatIndex:0
@@ -178,6 +229,7 @@ export default {
     }
     this.sectionId = this.$route.query.id || GetArgument().split('=')[1];
     this.getDetail();
+    this.getKnowledgeTag();
     this.getPackageTableData();
     // this.getFavorite(this.objectType,this.sectionId,this.userId,this.updateFn)
   },
@@ -310,6 +362,27 @@ export default {
           }
         })
     },
+     //获取相关资源的知识标签
+    getKnowledgeTag(){
+      this.$http.get("/ExplicitWordLabel/List", {
+          params: {
+            objectId: this.sectionId,
+            type:106
+          }
+        })
+        .then((res) => {
+          if (res.data.Success) {
+            if(res.data.Data != []){
+              this.knowledgeTag = res.data.Data.slice(0,30);
+            console.log(this.knowledgeTag)
+            }else{
+              this.knowledgeTag = [];
+            }
+          }else{
+            this.$message.error(res.data.Description);
+          }
+        })
+    },
     /**
      * [updateFn 获取和修改收藏的回调函数]
      * @Author   赵雯欣
@@ -335,7 +408,6 @@ export default {
         objectIds:this.sectionId,
         userId:this.userId
       });
-      
       this.goConfirmOrder(path, oderObj)
     },
 
@@ -482,6 +554,24 @@ export default {
 <style lang="less">
 .circuit-package {
   .top {
+    .section-intro{
+      margin: 46px 0 52px -16px;
+      /* font-weight: bold; */
+      .section-author{ 
+        font-size: 14px;
+        margin-bottom: 12px;
+      }
+       b{
+        display: inline-block;
+        width: 90px;
+        text-align: right;
+        }
+      span{
+        font-weight: 500;
+        margin-left: 0;
+        text-align: left;
+      }
+    }
     /* overflow: hidden; */
   }
   .pictrue {
@@ -528,6 +618,7 @@ export default {
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    flex-wrap: wrap;
     overflow: hidden;
     text-align: center;
     /*border: 1px solid #e6ebf5;*/
@@ -539,15 +630,17 @@ export default {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    background-color: #eee;
+    // background-color: #eee;
     margin: 15px;
     float: left;
-    img {
-      min-width: 150px;
-      max-width: 300px;
-      cursor: pointer;
-      border: 1px solid #eee;
-    }
+    width: 152px;
+    height: 70px;
+/*     img {
+  min-width: 150px;
+  max-width: 300px;
+  cursor: pointer;
+  border: 1px solid #eee;
+} */
   }
 
   .package-img-item {

@@ -3,14 +3,14 @@
     <div class="forget-all">
       <div class="forget-title">
         <img src="../../assets/images/logo大.png" alt="">
-        <span>{{resetPwd}}密码</span>
+        <span>忘记密码</span>
       </div>
        <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="forget-content">
         <el-form-item  prop="accountNumber" class="forget-item">
           <el-input prefix-icon=" " type="text" v-model="ruleForm.accountNumber" auto-complete="off" 
           placeholder="请输入手机号或/邮箱"></el-input>
           <input type="button" class="forget-code" value="获取验证码" readonly @click="getCode()"
-          :disabled="getDisabled">
+          >
           <img src="../../assets/images/手机.png" alt="">
         </el-form-item>
         <el-form-item  prop="code" class="forget-item">
@@ -239,25 +239,25 @@ export default {
     //设置当前窗口
     if(env == 'prod') {
       SetWidthHeight(500,425);
-
-      if(env == 'prod' ) {
-        if(GetArgument() == 'updatePwd') {
-          SetFormTitle('修改密码');
-        }else {
-          SetFormTitle('忘记密码');
-        }
-      };
+      SetFormTitle('忘记密码');
+      // if(env == 'prod' ) {
+      //   if(GetArgument() == 'updatePwd') {
+      //     SetFormTitle('修改密码');
+      //   }else {
+      //     SetFormTitle('忘记密码');
+      //   }
+      // };
       // SetFormTitle('重置密码');
     }
   },
   mounted(){
-     if(env == 'prod' ) {
-        if(GetArgument() == 'updatePwd') {
-          this.resetPwd = '修改';
-        }else {
-          this.resetPwd = '忘记';
-        }
-      };
+     // if(env == 'prod' ) {
+     //    if(GetArgument() == 'updatePwd') {
+     //      this.resetPwd = '修改';
+     //    }else {
+     //      this.resetPwd = '忘记';
+     //    }
+     //  };
     // console.log(JSON.parse(localStorage.userInfo))
   },
 }

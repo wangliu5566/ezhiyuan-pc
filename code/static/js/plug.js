@@ -27,6 +27,7 @@ function elementFromPoint1(x, y,element) {
 
 //清除用户数据
 function clearLocalStorage() {
+  console.log('clear')
    localStorage.removeItem('userId');
    localStorage.removeItem('userInfo');
    localStorage.removeItem('accessToken');
@@ -48,6 +49,8 @@ if(env == 'prod') {
          //保存accessToken
          localStorage.setItem('accessToken',winResult.Data.ExtendData.AccessToken);
          localStorage.setItem('accessTokenExpTime',winResult.Data.ExtendData.AccessTokenExpirationTime);
+         localStorage.setItem('account',winResult.Data.Account);
+         localStorage.setItem('passWord',winResult.Data.PassWord);
       }else {
          clearLocalStorage();
       }

@@ -9,12 +9,12 @@ import './assets/css/Product.less';
 export default {
   name: 'app',
   mounted() {
-    if(env == 'prod') ShowDevTools();
+    // if(env == 'prod') ShowDevTools();
 
     //轮询检查accessToken
     setInterval(()=>{
        this.validAccessToken();
-    }, 10 * 1000)
+    }, 1000 * 60)
   }
 }
 </script>

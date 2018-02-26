@@ -1,13 +1,15 @@
 
-var baseUrl="http://api.phei.kingchannels.cn";
-// var baseUrl="http://10.10.2.152:8818";
+// var baseUrl="http://api.phei.kingchannels.cn";
+var baseUrl="http://218.249.32.176:50680";
 // var baseUrl="http://demo.api.phei.kingchannels.cn";
 
-var env = "dev";    //dev  -- 开发环境   prod -- 生产环境
+var env = "prod";    //dev  -- 开发环境   prod -- 生产环境
 var deviceToken = '';
 
 function setDeviceToken() {
     if(env == 'prod') {
+        // deviceToken = GetDevicekToken();
+        // localStorage.setItem('deviceToken',deviceToken);
         if(localStorage.deviceToken && localStorage.deviceToken !== '') {
            deviceToken = localStorage.deviceToken;
         }else {
@@ -16,8 +18,8 @@ function setDeviceToken() {
         }
         // deviceToken = GetDevicekToken();
         // localStorage.setItem('deviceToken',deviceToken);
-    }else  {
-        localStorage.setItem('deviceToken','00AC927F1F99');
+    }else{
+        localStorage.setItem('deviceToken','abcdefghijklmn0123456789');
         deviceToken = localStorage.deviceToken;
     }
     return deviceToken;

@@ -118,7 +118,7 @@ export default {
            this.doExpand(newVal,row);
            return;
         }
-        //如果没拉过数据，就去拉数据，回调打开
+        //如果没拉过数据，就去拉数据，回调打开1
         this.getTableOfData(row,()=>{
             this.doExpand(newVal,row);
         })

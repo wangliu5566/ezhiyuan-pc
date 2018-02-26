@@ -7,7 +7,7 @@
       <el-radio-group v-model="activeName" size="medium">
         <el-radio-button label="1">知识元详情</el-radio-button>
         <el-radio-button label="2">知识地图</el-radio-button>
-        <el-radio-button label="3">知识束</el-radio-button>
+        <!-- <el-radio-button label="3">知识束</el-radio-button> -->
         <el-radio-button label="4">深度阅读</el-radio-button>
       </el-radio-group>
     </div>
@@ -698,9 +698,9 @@ export default {
           legendHoverLink: true, //是否启用图例 hover(悬停) 时的联动高亮。
           hoverAnimation: true, //是否开启鼠标悬停节点的显示动画
           force: { //力引导图基本配置
-            repulsion: 350, //节点之间的斥力因子。
-            gravity: 0.05, //节点受到的向中心的引力因子。该值越大节点越往中心点靠拢
-            edgeLength: 100, //边的两个节点之间的距离，
+            repulsion: 300, //节点之间的斥力因子。
+            gravity: 0.1, //节点受到的向中心的引力因子。该值越大节点越往中心点靠拢
+            edgeLength: 150, //边的两个节点之间的距离，
             layoutAnimation: true
             //因为力引导布局会在多次迭代后才会稳定，这个参数决定是否显示布局的迭代动画，在浏览器端节点数据较多（>100）的时候不建议关闭，布局过程会造成浏览器假死  
           },

@@ -40,7 +40,7 @@
               <li class="list-item fl " :style="{width:0.13 * winWidth +'px',height:0.29 * winHeight +'px'}" v-for="(item,index) in categoryList" @click="toIndexPath(index,item.ExtendData,item.Title,item.type)">
                  <img :src="item.imgBigSrc" alt="" class="list-big-img">
                  
-                 <img :src="item.imgSmallSrcPaied" alt="" class="list-small-img" v-if="item.ExtendData.IsOrdered" v-show="!IsOrderedShow">
+                 <img :src="item.imgSmallSrcPaied" alt="" class="list-small-img" v-if="item.ExtendData.IsOrdered " v-show="!IsOrderedShow">
                  <img :src="item.imgSmallSrc" alt="" class="list-small-img" v-else v-show="!IsOrderedShow">
               </li>
             </ul>
@@ -113,9 +113,11 @@
       </el-col> -->
     </el-row>
     
-    <div class="index-content">
+    <!-- <div class="index-content">
       <el-button type="info" @click="toPath('/Login')">登录</el-button>
-      <el-button type="info" @click="toPath('/Register')">注册</el-button> 
+      <el-button type="info" @click="toPath('/Register')">注册</el-button>
+      <el-button type="info" @click="toPath('/EditPassword')">修改密码</el-button>
+      <el-button type="info" @click="toPath('/ForceUpdate')">强制更新</el-button>
     </div>
     <div style="margin-top: 20px;">
       <el-button type="primary" @click="toPath('/ChoiceSearchList')">精选章节搜索列表</el-button>
@@ -148,7 +150,7 @@
       <el-button type="primary" @click="toPath('/help')">帮助与反馈</el-button>
       <el-button type="primary" @click="toPath('/CopyRight')">专题知识版权声明</el-button>
       <el-button type="primary" @click="toPath('/ClearCache')">清除缓存</el-button>
-    </div>
+    </div> -->
     
   </div>
 </template>
@@ -249,7 +251,7 @@ export default {
             if(this.categoryList.length == 0){
               this.categoryList = this.categoryList.concat(this.imgSrcData);
             }else{
-              this.categoryList.forEach((item,index) => {
+              this.categoryList.reverse().forEach((item,index) => {
                 this.imgSrcData.forEach((citem,cindex) => {
                     if(index == cindex){
                       item = Object.assign({},item,citem);
@@ -257,6 +259,14 @@ export default {
                     }
                 })
               })
+              // this.categoryList.forEach((item,index) => {
+              //   this.imgSrcData.forEach((citem,cindex) => {
+              //       if(index == cindex){
+              //         item = Object.assign({},item,citem);
+              //         this.$set(this.categoryList,index,item);
+              //       }
+              //   })
+              // })
             }
             console.log(this.categoryList)
           }else{

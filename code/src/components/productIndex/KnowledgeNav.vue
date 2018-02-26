@@ -23,6 +23,10 @@
                   :style="{width: 0.15 * winWidth +'px'}"
                   id="divId">
                      <li v-for="(ele,i) in item.children" class="side-in-li" @click="getChildListAndWordList(ele.Id,ele.Title)">
+                        <!-- <el-tooltip class="item" effect="light" :content="ele.Title" placement="top" v-if="winWidth < 1200">
+                         <span class="side-in-span">{{ele.Title}}</span>
+                        </el-tooltip>
+                        <span class="side-in-span" v-else>{{ele.Title}}</span> -->
                        <span class="side-in-span">{{ele.Title}}</span>
                      </li>
                   </ul>
@@ -447,7 +451,7 @@ export default {
           params: {
             parentId:this.oneChildId,
             type: 'learning',
-            isSelf:false
+            isSelf:false,
           }
         })
         .then((res) => {

@@ -1,7 +1,7 @@
 <template>
   <div class="fill-invoice-main">
     <div class="fill-invoice-all">
-      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="121px">
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="121px" >
         <el-form-item  prop="invoiceType" label="发票类型：">
            <el-radio v-model="ruleForm.invoiceType" :label="1">普通发票</el-radio>
         </el-form-item>
@@ -34,7 +34,7 @@
           placeholder="请输入接收人电话"></el-input>
         </el-form-item>
         <el-form-item id="lastItem">
-           <el-button type="primary" @click="submitInvoice('ruleForm')">确定</el-button>
+           <el-button type="primary" @click="checkRuleForm">确定</el-button>
            <el-button @click="closeWindow">取消</el-button>
         </el-form-item>
       </el-form>
@@ -82,7 +82,7 @@ export default {
      * @作者     王柳
      * @日期     2018-01-12
      */
-   submitInvoice(ruleForm){
+   submitInvoice(){
       var params = {};
       params = {
         OrderId: this.orderId,
@@ -96,25 +96,51 @@ export default {
         Comment:'',
         CropIdentity:this.ruleForm.taxpayerCode,
       }
-      this.$refs[ruleForm].validate((valid) => {
-        if (valid) { 
-          this.$http.post("/Order/SaveInvoiceAddress", params)
-            .then((res) => {
-              // console.log(res)
-              if (res.data.Success == true) {
-                 this.$http.post("/Invoice/Create", params)
-                  .then((res) => {
-                    // console.log(res)
-                    if (res.data.Success == true) {
-                      this.$message.success('发票申请成功！');
-                    }else {
-                      this.$message.error(res.data.Description);
-                    }
-                  })
-              }
-            })
+      this.$http.post("/Order/SaveInvoiceAddress", params)
+        .then((res) => {
+          // console.log(res)
+          if (res.data.Success == true) {
+             this.$http.post("/Invoice/Create", params)
+              .then((res) => {
+                // console.log(res)
+                if (res.data.Success == true) {
+                  this.$message.success('发票申请成功！');
+                  if(env == 'prod'){
+                    CloseForm();
+                  }
+                }else {
+                  this.$message.error(res.data.Description);
+                }
+              })
+          }
+        })
+   },
+   checkRuleForm(){
+      if(this.ruleForm.invoiceTitle == 2){
+        if(this.ruleForm.startContent == ''){
+          this.$message.error('公司名称不能为空！');
+        }else if(this.ruleForm.taxpayerCode == ''){
+          this.$message.error('纳税人识别号不能为空！');
+        }else if(this.ruleForm.taxpayerAdress == ''){
+          this.$message.error('邮寄地址不能为空！');
+        }else if(this.ruleForm.taxpayerName == ''){
+          this.$message.error('接收人姓名不能为空！');
+        }else if(this.ruleForm.taxpayerTelephone == ''){
+          this.$message.error('接收人电话不能为空！');
+        }else{
+          this.submitInvoice();
         }
-      })
+      }else{
+        if(this.ruleForm.taxpayerAdress == ''){
+          this.$message.error('邮寄地址不能为空！');
+        }else if(this.ruleForm.taxpayerName == ''){
+          this.$message.error('接收人姓名不能为空！');
+        }else if(this.ruleForm.taxpayerTelephone == ''){
+          this.$message.error('接收人电话不能为空！');
+        }else{
+          this.submitInvoice();
+        }
+      }
    },
    //返回到上一级地址
    closeWindow(){

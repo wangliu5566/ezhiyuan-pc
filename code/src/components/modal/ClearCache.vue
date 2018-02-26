@@ -6,23 +6,24 @@
           <el-progress type="circle" :percentage="percentage"></el-progress>
         </div>
         <div class="title-div fl"> 
-          共<span class="title-span">{{+ cache.Epub +  +cache.PDF}}M</span>缓存
+          共<span class="title-span">{{totalCache}}M</span>缓存
         </div>
       </div>
-      <div class="clearfix"></div>
+      <!-- <div class="clearfix"></div>
       <div class="cache-content">
          <el-checkbox-group v-model="checkList" @change="selectChange">
           <el-checkbox :label="1">图书文件：
-            <span style="color:red">{{cache.Epub}}</span> M
+            <span style="color:red">{{formatPrice(cache.Epub,2)}}</span> M
           </el-checkbox>
           <el-checkbox :label="2">PDF文档：
-            <span style="color:red">{{cache.PDF}}</span> M
+            <span style="color:red">{{formatPrice(cache.PDF,2)}}</span> M
           </el-checkbox>
         </el-checkbox-group>
-      </div>
+      </div> -->
+      <div class="clearfix"></div>
       <div class="content-button fr">
           <el-button @click="cancleClear">取消</el-button>
-          <el-button @click="clearCache(selectType)" :disabled="isDisabled">清除</el-button>
+          <el-button @click="clearCache(selectType)">清除</el-button>
       </div>
     </div>
   </div>
@@ -35,7 +36,8 @@ export default {
       checkList:[],
       percentage:0,
       isDisabled:true,
-      selectType:''
+      selectType:'',
+      totalCache:0
     }
   },
   methods:{
@@ -63,7 +65,9 @@ export default {
      */
   	getCache() {
       if(env == 'dev') {
-        this.cache = JSON.parse('{"PDF":"11.70","Epub":"441.45","FreeSpace":"444.36","TotalSpace":"528.64","OccupiedSpace":"84.28"}');
+        this.cache = JSON.parse('{"PDF":"114.704","Epub":"441.454","FreeSpace":"444.36","TotalSpace":"528.64","OccupiedSpace":"84.28"}');
+        var totalCache = parseFloat(this.cache.OccupiedSpace) + parseFloat(this.cache.FreeSpace);
+        this.totalCache = this.formatPrice(totalCache,2);
         var percentage = Math.ceil(this.cache.OccupiedSpace/this.cache.TotalSpace * 100);
         var timer = setInterval(() => {
            if(this.percentage >= percentage){
@@ -76,6 +80,8 @@ export default {
        
       }else {
         this.cache = JSON.parse(GetFileSize());
+        var totalCache = parseFloat(this.cache.OccupiedSpace);
+        this.totalCache = this.formatPrice(totalCache,2);
         var percentage = Math.ceil(this.cache.OccupiedSpace/this.cache.TotalSpace * 100);
         var timer = setInterval(() => {
            if(this.percentage >= percentage){

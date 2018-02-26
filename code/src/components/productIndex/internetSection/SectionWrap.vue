@@ -229,7 +229,10 @@ export default {
       this.$http.get("/Content/Search", {
           params: {
             categoryIds: this.oneChildId,
-            objectTypes:this.type == '互联网+' ? 108 : ''
+            // objectTypes:this.type == '互联网+' ? 108 : '',
+            objectTypes:108,
+            ps:1000,
+            cp:1,
           }
         })
         .then((res) => {
@@ -278,7 +281,10 @@ export default {
       this.$http.get("/Content/Search", {
           params: {
             categoryIds: this.childId,
-            objectTypes:this.type == '互联网+' ? 108 : ''
+            // objectTypes:this.type == '互联网+' ? 108 : '',
+            ps:1000,
+            cp:1,
+            objectTypes:108
           }
         })
         .then((res) => {

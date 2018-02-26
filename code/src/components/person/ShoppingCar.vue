@@ -6,6 +6,7 @@
       element-loading-text="数据加载中..."
       :data="orderList" 
       @selection-change="handleSelectionChange"
+      ref="shoppingCarList"
       >
         <el-table-column 
         type="selection" 
@@ -122,6 +123,7 @@ export default {
       imgSrc:'./../../assets/images/占位符.png',
 
       userId:localStorage.userId,
+      shoppingCarId:this.$route.query.shoppingCarId || GetArgument().split('=')[1],
       pageSize:10,
       currentPage:1,
       totalCount:0,
@@ -141,6 +143,7 @@ export default {
     }
   },
   mounted() {
+    console.log(this.shoppingCarId)
     this.getList();
     window.onresize = ()=> {
        this.winWidth = this.setWindow().winWidth;
@@ -223,6 +226,14 @@ export default {
             this.loading = false;
             // console.log(res)
             this.orderList = res.data.Data.ItemList;
+
+            this.$nextTick(()=>{
+              this.orderList.forEach((item,index) => {
+                if(item.Id == this.shoppingCarId){
+                 this.$refs.shoppingCarList.toggleRowSelection(this.orderList[index]);
+                }
+              })
+            });
             //默认购买数量为1
             this.orderList = this.orderList.map((item)=>{
                 return Object.assign({},item,{Count:1,IsDisabled:false})

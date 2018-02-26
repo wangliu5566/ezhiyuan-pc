@@ -338,7 +338,7 @@ export default {
           expId:id
          }],
          winType:'详情',
-         winTitle:title,
+         winTitle:title + '&_' + id,
          isIndForm:true,
        });
     }

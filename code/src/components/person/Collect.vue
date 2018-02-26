@@ -16,8 +16,7 @@
       v-loading="loading" 
       element-loading-text="数据加载中..."
       :data="tableData"
-      @selection-change="handleSelectionChange" 
-      :default-sort = "{prop: 'CreateTime',order: 'descending'}"
+      @selection-change="handleSelectionChange"
       @row-click="aaa">
         <el-table-column
         type="selection"
@@ -53,7 +52,7 @@
         label="收藏时间" 
         width="280"
         prop="Content.ExtendData.RelationCreateTime"
-        sortable>
+        >
         </el-table-column>
       </el-table>
       <div style="margin-top:20px">

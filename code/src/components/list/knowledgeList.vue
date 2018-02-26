@@ -11,7 +11,7 @@
         >
         <el-table-column type="expand" >
           <template slot-scope="props">
-            <div style="width:80%;line-height:20px;margin:0 auto;padding:10px 15px;outline: 1px dashed #ddd;">
+            <div style="width:80%;line-height:20px;margin:10px auto;padding:10px 15px;outline: 1px dashed #ddd;">
               <div  @contextmenu.prevent="" @click="goBookDetail(props.row.ParentId,props.row.Title)">
                 {{props.row.Abstracts?'说明：'+props.row.Abstracts:'说明：暂无说明'}}
               </div>

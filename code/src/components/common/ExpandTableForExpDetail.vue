@@ -56,7 +56,7 @@
         align="center"
         >
         <template slot-scope="props">
-            <a href="javascript:void(0)" style="cursor:pointer" @click="expandRowKeys(props.row.Id,props.row)">
+            <a href="javascript:void(0)" style="cursor:pointer" @click="expandRowKeys(props.row.ObjectId,props.row)">
                {{props.row.isExpand?'收起':'展开'}}
                  <i class="el-icon-arrow-down" :style="{transition:'all .5s',transform:'rotate('+transform(props.row)+'deg)'}">
                  </i>
@@ -204,7 +204,7 @@ export default {
                   'command': command => {
                       this.objectType = command;
                       // this.getResourceData();
-                      this.getDetail();
+                      this.getKnowledgeData(this.objectType);
                   }
               }
             },[
@@ -262,7 +262,72 @@ export default {
       * @DateTime 2017-12-17
       */
      getDetail(){
-      console.log('in')
+      this.loading = true;
+      this.$http.get("/Search", {
+          params: {
+            sourceObjectId: this.expId,
+            ps: this.pageSize,
+            cp: this.currentPage,
+            objectTypes:'102,103,105,106'
+          }
+        })
+        .then((res) => {
+          if (res.data.Code == 200) {
+            console.log(res)
+            this.loading = false;
+            let listIds = [];
+            this.ResourceList = res.data.Data.ItemList;
+            this.totalCount = res.data.Data.RecordCount;
+            // console.log(this.ResourceList)
+
+            this.ResourceList.forEach((item, index) => {
+              item['hasDown'] = false;
+              item['downLoadPercent'] = 0;
+              item['isExpand'] = false;
+              item['startDownLoad'] = false;
+              listIds.push(item.Content.Id);
+            })
+            
+
+            //下面是winform下的获取当前文件是否已经下载
+            if(localStorage.getItem('userId') && localStorage.getItem('userId') !== '' && env == 'prod') {
+                GetDownLoadedResources(listIds.join(','),localStorage.getItem('userId'),(hasDownLoadedContent)=>{
+                    
+                    hasDownLoadedContent = JSON.parse(hasDownLoadedContent);
+
+                    console.log(hasDownLoadedContent);
+                    
+                    if(hasDownLoadedContent.length !== 0) {
+                       //表明此时是已经下载过的了
+                       // fileData = hasDownLoadedContent[0];
+                       hasDownLoadedContent.forEach((getItem,getIndex)=>{
+                         this.ResourceList.forEach((bookItem,bookIndex)=>{
+                             if(getItem.ObjectId == bookItem.Content.Id) {
+                                 bookItem['hasDown'] = true;
+                                 this.$set(this.ResourceList,bookIndex,bookItem);
+                             }
+                         })
+                       })
+                    }
+                })
+              }
+
+
+
+            this.expands = [];
+          } else {
+            this.loading = false;
+            this.$message.error(res.data.Description);
+          }
+
+        })
+    },
+     /**
+      * [搜索知识元]
+      * @Author   王柳
+      * @DateTime 2017-12-17
+      */
+     getKnowledgeData(type){
       this.loading = true;
       this.$http.get("/Search", {
           params: {
@@ -277,7 +342,6 @@ export default {
             console.log(res)
             this.loading = false;
             let listIds = [];
-            this.ResourceList = [];
             this.ResourceList = res.data.Data.ItemList;
             this.totalCount = res.data.Data.RecordCount;
             // console.log(this.ResourceList)
@@ -327,16 +391,15 @@ export default {
     //分页
      handleSizeChange(val) {
       this.pageSize = val;
-      this.getDetail();
+      this.getKnowledgeData();
     },
     handleCurrentChange(val) {
-      console.log(222)
       this.currentPage = val;
-      this.getDetail();
+      this.getKnowledgeData();
     },
 
   	getRowKeys(row) {
-	        return row.Id;
+	        return row.ObjectId;
 	  },
 	  transform(row) {
         return row.isExpand ? 180 : 0;
@@ -399,7 +462,7 @@ export default {
         var index = 0;
         //匹配
         this.ResourceList.forEach((item, index1) => {
-            if (item.Id == newVal) {
+            if (item.ObjectId == newVal) {
                 index = index1;
             }
         })
@@ -410,7 +473,6 @@ export default {
             this.$set(this.ResourceList, index, row);
             return;
         }
-
         row.isExpand = true;
         this.$set(this.ResourceList, index, row);
         this.expands.push(newVal);

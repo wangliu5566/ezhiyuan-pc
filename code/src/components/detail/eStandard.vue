@@ -1,6 +1,6 @@
 <template>
   <div class="e-standard" v-loading="loading" element-loading-text="数据加载中...">
-    <div :style="{width:0.9 * winWidth + 'px',marginLeft:0.05 * winWidth + 'px',marginRight:0.05 * winWidth + 'px',marginTop:38 + 'px',minWidth:1000 + 'px'}">
+    <div :style="{width:0.9 * winWidth + 'px',marginLeft:0.05 * winWidth + 'px',marginRight:0.05 * winWidth + 'px',marginTop:38 + 'px',minWidth:1200 + 'px'}">
        <div class="top">
           <el-row>
             <el-col :span="20">
@@ -13,7 +13,7 @@
                     <span>
                       {{dataObj.CurrentPrice || dataObj.CurrentPrice === 0 ?'￥'+formatPrice(dataObj.CurrentPrice,2):'暂无'}}
                     </span>
-                    <p v-show="dataObj.ExtendData.SaleStrategyName ? true : false">价格 
+                    <p >价格 
                       <span class="price-span">
                       {{dataObj.MarketPrice || dataObj.MarketPrice === 0 ?'￥'+formatPrice(dataObj.MarketPrice,2):'暂无'}}
                       </span>
@@ -68,10 +68,19 @@
                       {{dataObj.ExtendData.DraftingDept?dataObj.ExtendData.DraftingDept:'暂无'}}
                     </span>
                   </p>
-                  <p class="section-author">起草人：
+                  <p class="section-author">起 草 人：
                     <span>
                       {{dataObj.ExtendData.DraftingUser?dataObj.ExtendData.DraftingUser:'暂无'}}
                     </span>
+                  </p>
+                  <p class="section-author">知识标签：
+                   <span v-if="knowledgeTag.length > 0">
+                    <span  v-for="(item,index) in knowledgeTag" @click="goOtherPage('/ExplicitWordDetail',item.ExplicitWord.Id,item.ExplicitWord.Title)"
+                    style="cursor:pointer" class="expDetail-span" >
+                      {{item.ExplicitWord.Title}}
+                    </span>
+                  </span>
+                  <span v-else>暂无</span>
                   </p>
                 </div>
               </div>
@@ -148,6 +157,7 @@ export default {
       dataObj: {
         ExtendData:{}
       },
+      knowledgeTag:[],
       count: 1,
       hasDownLoad:false,
       startDownLoad:false,
@@ -161,6 +171,7 @@ export default {
     }
     this.sectionId = this.$route.query.id || GetArgument().split('=')[1];
     this.getDetail();
+    this.getKnowledgeTag();
     // this.getFavorite(this.objectType, this.sectionId, this.userId, this.updateFn)
   },
   methods: {
@@ -206,6 +217,23 @@ export default {
             }
           }else{
             this.loading = false;
+            this.$message.error(res.data.Description);
+          }
+        })
+    },
+    //获取相关资源的知识标签
+    getKnowledgeTag(){
+      this.$http.get("/ExplicitWordLabel/List", {
+          params: {
+            objectId: this.sectionId,
+            type:103
+          }
+        })
+        .then((res) => {
+          if (res.data.Success) {
+            this.knowledgeTag = res.data.Data.slice(0,30);
+            console.log(this.knowledgeTag)
+          }else{
             this.$message.error(res.data.Description);
           }
         })
@@ -318,5 +346,14 @@ export default {
 
 </script>
 <style lang="less">
-
+.expDetail-span{
+  display: inline-block;
+  border: 1px solid #1c517d;
+  margin:0 8px 6px 0;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 6px;
+  border-radius: 4px;
+  color: #1c517d;
+}
 </style>

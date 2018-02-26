@@ -7,21 +7,22 @@
       ref="sectionListTable"
       :data="orderList"
       :row-key="getRowKeys"
-      :expand-row-keys="expands">
+      :expand-row-keys="expands"
+      :default-expand-all="true">
       <el-table-column 
       type="expand" 
       class="column-one">
         <template slot-scope="props">
           <div style="width:100%">
             <ul style="width:82%;float:left" class="order-ul">
-              <li v-for="(item,index) in props.row.OrderDetails" style="padding:10px 0;border-bottom:1px solid #e6ebf5">
-                <span style="display:inline-block;width:48px;heigth:58px;margin-right:1%;margin-left:10px">
+              <li v-for="(item,index) in props.row.OrderDetails" style="height:66px;line-height:66px;padding:10px 0;border-bottom:1px solid #e6ebf5">
+                <span style="display:inline-block;width:48px;margin-right:1%;margin-left:10px">
                   <img v-if="item.Content.CoverUrl" :src="item.Content.CoverUrl" alt="" style="width:100%;vertical-align: middle">
                   <img class="title-span-img" v-else src="../../assets/images/占位符.png" style="width:100%;vertical-align: middle">
                 </span>
-                <span style="display:inline-block;width:19%;overflow:hidden;">
-                {{item.Content.Title ? (item.Content.Title.length>25?
-             item.Content.Title.slice(0,25).concat('...'):item.Content.Title):'暂无标题'}}
+                <span style="display:inline-block;width:19%;text-align:left;text-overflow:hidden;word-wrap:nowrap">
+                {{item.Content.Title ? (item.Content.Title.length>10?
+             item.Content.Title.slice(0,8).concat('...'):item.Content.Title):'暂无标题'}}
                 </span>
                 <span style="display:inline-block;width:21%;text-align:center">
                   {{formatPrice(item.Content.CurrentPrice,2)}}
@@ -36,7 +37,7 @@
             </ul>
             <div style="width:18%;float:right;text-align:center;border-left:1px solid #e6ebf5" class="order-div">
               <span>
-                {{formatPrice(props.row.TotalMoney,2)}}
+                {{formatPrice(props.row.UndiscountTotalMoney,2)}}
               </span>
             </div>
           </div>
@@ -47,7 +48,7 @@
           >
           <template slot-scope="props">
               <div style="width:100%;font-weight: bold;color:#878d99;font-size:12px">
-               订单编号：{{props.row.Id ? props.row.Id : '暂无数据'}}
+               订单编号：{{props.row.ExternalId ? props.row.ExternalId : '暂无数据'}}
               </div>
           </template>
         </el-table-column>
@@ -190,10 +191,12 @@ export default {
             var payTotal = 0;
             var Benefit = 0;
             var ShouldPaidMoney = 0;
-            payTotal = res.data.Data.TotalMoney;
-            Benefit = res.data.Data.ExtendData.Benefit ? res.data.Data.ExtendData.Benefit : '0';
-            ShouldPaidMoney = res.data.Data.ExtendData.ShouldPaidMoney ? res.data.Data.ExtendData.ShouldPaidMoney : res.data.Data.TotalMoney;
-
+            payTotal = res.data.Data.UndiscountTotalMoney;
+            // Benefit = res.data.Data.ExtendData.Benefit ? res.data.Data.ExtendData.Benefit : '0';
+            // ShouldPaidMoney = res.data.Data.ExtendData.ShouldPaidMoney ? res.data.Data.ExtendData.ShouldPaidMoney : res.data.Data.TotalMoney;
+             
+            ShouldPaidMoney = res.data.Data.TotalMoney ? res.data.Data.TotalMoney : '0';
+            Benefit = payTotal - ShouldPaidMoney;
             this.payTotal = this.formatPrice(payTotal,2);
             this.Benefit = this.formatPrice(Benefit,2);
             this.ShouldPaidMoney = this.formatPrice(ShouldPaidMoney,2);

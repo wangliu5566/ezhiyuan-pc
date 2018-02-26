@@ -75,7 +75,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="currentPage"
-          :page-sizes="[15, 20, 30, 40]"
+          :page-sizes="[10, 20, 30, 40]"
           :page-size="pageCount"
           layout="total, sizes, prev, pager, next, jumper"
           :total="totalCount">
@@ -106,7 +106,7 @@
         dataList:[],
         allDataList:[],//因为下载列表是从本地数据库取的，没有走接口，所以需要把所有数据缓存下来用做分页
         loading:false,
-        pageCount:15,
+        pageCount:10,
         currentPage:1,
         totalCount:0,
         isUP:false,

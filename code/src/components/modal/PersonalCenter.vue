@@ -92,7 +92,7 @@ export default {
      * @return   {[type]}   [description]
      */
     getUserDetail() {
-       this.$http.get("/User/Detail", {
+        this.$http.get("/User/Detail", {
           params:{
             id:this.userId,
           }

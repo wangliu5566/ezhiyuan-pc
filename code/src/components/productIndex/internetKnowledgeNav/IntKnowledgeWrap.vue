@@ -306,14 +306,14 @@ export default {
     displayContent(item,index){
        this.activeIndex = index || 0;
        this.isChildListShow = true;
-      //切换分类，销毁echarts
-      this.oneChildId = item.Id;
-      this.setOneTitle = item.Title;
-      if(item.children && item.children.length !== 0 ) {
+       //切换分类，销毁echarts
+       this.oneChildId = item.Id;
+       this.setOneTitle = item.Title;
+       if(item.children && item.children.length !== 0 ) {
          return;
-      }else{
+       }else{
         this.getChildList(item);
-      }
+        }
     },
      /**
       * [getChildListByCategoryId 根据二级分类id获取右侧思维导图数据]
@@ -463,12 +463,18 @@ export default {
           }
         })
         .then((res) => {
-          console.log(res)
           if (res.data.Code == 200) {
               //此时是左侧根据一级菜单获取二级菜单
               this.sideMenuData = this.sideMenuData.map((item) => {
                 if(item.Id == citem.Id){
-                  item.children = res.data.Data.ItemList;
+                  let arr = res.data.Data.ItemList;
+                  arr.forEach((nitem,nindex)=>{
+                     if(nitem.Title == '其它') {
+                        let arrItem = arr.splice(nindex,1);
+                        arr.push(arrItem[0]);
+                     }
+                  })
+                  item.children = arr;
                 }
                 return item;   
               });
@@ -524,12 +530,24 @@ export default {
           this.loading = false;
           // console.log(res)
           if (res.data.Code == 200) {
-              this.twoChildId = res.data.Data.ItemList[0].Id;
-              this.twoTitle = res.data.Data.ItemList[0].Title;
+              
               //此时是左侧根据一级菜单获取二级菜单
               this.sideMenuData = this.sideMenuData.map((item) => {
                 if(item.Id == this.childId){
-                  item.children = res.data.Data.ItemList;
+                  let arr = res.data.Data.ItemList;
+                  arr.forEach((nitem,nindex)=>{
+                     if(nitem.Title == '其它') {
+                        let arrItem = arr.splice(nindex,1);
+                        arr.push(arrItem[0]);
+                     }
+                  })
+
+                  console.log(arr)
+
+                  item.children = arr;
+
+                  this.twoChildId = arr[0].Id;
+                  this.twoTitle = arr[0].Title;
                 }
                 return item;   
               });

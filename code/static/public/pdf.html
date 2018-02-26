@@ -401,6 +401,11 @@
            e.preventDefault();
          }, false)
 
+
+         $vm.$refs.pdfEle.contentWindow.document.addEventListener('selectstart', (e)=>{
+           e.preventDefault();
+         }, false)
+
          
       }
       

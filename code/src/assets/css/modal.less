@@ -43,13 +43,14 @@
 }
 //检查更新
 .upadate-main{
+	position: relative;
 	width: 465px;
 	height: 325px;
 	margin: 0 auto;
 	/* border: 1px solid black; */
 	.upadate-all{
 		width: 346px;
-		margin: 14px 50px 14px 80px;
+		margin: 40px 50px 14px 65px;
 		.upadate-title{
 			.upadate-img{
 				width: 69px;
@@ -64,7 +65,7 @@
 				font-weight: bold;
 				font-size: 18px;
 				color: #00aeed;
-				margin: 10px 0 14px 0;
+				margin: 25px 0 14px 0;
 			}
 		}
 		.upadate-content{
@@ -98,6 +99,7 @@
 .right-main{
 	width: 465px;
 	height: 355px;
+	overflow: auto;
 	margin: 0 auto;
 	// border: 1px solid black;
 	.right-all{
@@ -154,6 +156,32 @@
 				}
 			}
 		}
+		.content-four{
+			h3{
+				font-size: 14px;
+			}
+			.content-four-span{
+				font-size: 12px;
+				font-weight: 500;
+			}
+			ul{
+				height: 66px;
+				margin: 10px 0 12px 70px;
+				li{
+					float: left;
+					font-size: 12px;
+				}
+				li:nth-child(2n+1){
+					width: 148px;
+					overflow: hidden;
+          text-overflow:ellipsis;
+          white-space: nowrap;
+				}
+				li:nth-child(2n){
+					margin-left: 10px;
+				}
+			}
+		}
 		.content-one-p{
 				line-height: 24px;
 				display: block;
@@ -166,11 +194,15 @@
 	width: 465px;
 	height: 325px;
 	margin: 0 auto;
-	// border: 1px solid black;
+	/* border: 1px solid black; */
 	.cache-all{
-		width: 325px;
+		width: 385px;
 		font-size: 14px;
-		margin: 22px 50px 0 60px;
+		margin: 22px 30px 0 40px;
+		/* border: 1px solid black; */
+		overflow:hidden;
+		text-overflow:ellipsis;
+		white-space:nowrap;
 		.cache-title{
 			.title-div{
 				line-height: 130px;
@@ -187,6 +219,8 @@
 			margin: 46px 0 60px 0;
 		}
 		.content-button{
+			height: 28px;
+			margin-top: 100px;
 			.el-button{
 					height: 28px;
 					line-height: 0;

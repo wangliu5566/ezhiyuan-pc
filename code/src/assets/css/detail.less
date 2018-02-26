@@ -105,11 +105,14 @@
 }
 //电子标准详情
 .e-standard {
-  @media screen and (max-width: 1376px) {
-    .standard-right{
-      width: 50%;
+  .standard-right{
+      width: 80%;
     }
-  }
+  /* @media screen and (max-width: 1376px) {
+    .standard-right{
+      width: 80%;
+    }
+  } */
   .top {
     /* overflow: hidden; */
     border-bottom: 1px solid #ccc;
@@ -240,7 +243,7 @@
     
     p{
     	font-size: 12px;
-    	margin: 14px 0;
+    	/* margin: 14px 0; */
     }
     .section-intro{
       margin: 46px 0 52px 0;
@@ -350,13 +353,21 @@
 	      }
 	    }
 	   .right-button{
-        width: 230px;
+         display: flex;
+        justify-content: flex-end;
+        margin-top: 88px;
         .el-button{
-          width: 45%;
+          width: 90px;
           height: 38px;
-          padding: 12px 12px;
+          text-align: center;
+          /* padding: 12px 12px; */
         }
-       
+        .el-button:nth-child(2){
+         span{
+          display: inline-block;
+          margin-left: -10px;
+         }
+       }
       }
     }
   }
